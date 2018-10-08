@@ -1,0 +1,50 @@
+DROP DATABASE IF EXISTS dm;
+CREATE DATABASE dm DEFAULT CHARACTER SET utf8;
+
+USE dm;
+
+CREATE TABLE donor (
+	id int NOT NULL AUTO_INCREMENT, 
+	name varchar(80) DEFAULT "", 
+	lastname varchar(80) DEFAULT "", 
+	address1 varchar(80) DEFAULT "", 
+	address2 varchar(80) DEFAULT "", 
+	city varchar(80) DEFAULT "", 
+	state varchar(80) DEFAULT "", 
+	zip varchar(80) DEFAULT "", 
+	country varchar(80) DEFAULT "", 
+	telephone varchar(80) DEFAULT "", 
+	email varchar(80) DEFAULT "", 
+	notes varchar(80) DEFAULT "", 
+	hidden tinyint(1) DEFAULT 0, PRIMARY KEY (id)
+) ENGINE=MYISAM;
+
+CREATE TABLE `donation` (
+	`id` int NOT NULL AUTO_INCREMENT,
+	`date` DATE DEFAULT NULL, 
+	`description` varchar(80) DEFAULT "", 
+	`amount` varchar(80) DEFAULT "",
+	`note` varchar(80) DEFAULT "",
+	 PRIMARY KEY (`id`)
+) ENGINE=MYISAM;
+
+CREATE TABLE `user` (
+	`userid` varchar(255) DEFAULT "",
+	`password` varchar(255) DEFAULT "",
+	`admin` tinyint(1) DEFAULT 0,
+	PRIMARY KEY (`userid`)
+) ENGINE=MYISAM;
+
+CREATE TABLE `pledge` (
+	`id` int NOT NULL AUTO_INCREMENT,
+	`donor_id` int NOT NULL,
+	`description`varchar(80) DEFAULT "",
+	`amount` varchar(80) DEFAULT "",
+	`begin_date` DATE DEFAULT NULL,
+	`end_date` DATE DEFAULT NULL,
+	`fulfilled` tinyint(1) DEFAULT 0,
+	`cancelled` tinyint(1) DEFAULT 0,
+	`note` varchar(255),
+	 PRIMARY KEY (`id`)
+) ENGINE=MYISAM; 
+	`
