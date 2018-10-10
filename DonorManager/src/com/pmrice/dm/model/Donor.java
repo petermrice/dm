@@ -131,67 +131,93 @@ public class Donor implements Serializable {
 		hidden = value;
 	}
 	
-	public static Donor get(int id) throws SQLException {
-		Connection con = Util.getConnection();
-		ResultSet rs = con.createStatement().executeQuery("SELECT * FROM dm.donor WHERE id = '" + id + "';");
-		Donor donor = new Donor(
-				rs.getInt("id"),
-				rs.getString("name"), 
-				rs.getString("lastname"), 
-				rs.getString("address1"), 
-				rs.getString("address2"), 
-				rs.getString("city"), 
-				rs.getString("state"), 
-				rs.getString("zip"), 
-				rs.getString("telephone"), 
-				rs.getString("email"), 
-				rs.getString("notes"), 
-				rs.getBoolean("admin"));
-		return donor;
+	public static Donor get(int id) {
+		try {
+			Connection con = Util.getConnection();
+			String sql = "SELECT * FROM dm.donor WHERE id = '" + id + "';";
+			ResultSet rs = con.createStatement().executeQuery(sql);
+			if (!rs.next()) return null; // no value returned
+			Donor donor = new Donor(
+					rs.getInt("id"),
+					rs.getString("name"), 
+					rs.getString("lastname"), 
+					rs.getString("address1"), 
+					rs.getString("address2"), 
+					rs.getString("city"), 
+					rs.getString("state"), 
+					rs.getString("zip"), 
+					rs.getString("telephone"), 
+					rs.getString("email"), 
+					rs.getString("notes"), 
+					rs.getBoolean("hidden"));
+			return donor;
+		} catch (Exception e) {
+			System.out.println("Error getting a Donor.");
+			return null;
+		}
 	}
 	
-	public static boolean remove(int id) throws SQLException {
-		Connection con = Util.getConnection();
-		return con.createStatement().execute("REMOVE FROM dm.donor WHERE id = '" + id + "';");
+	public static boolean remove(int id) {
+		try {
+			Connection con = Util.getConnection();
+			String sql = "DELETE FROM dm.donor WHERE id = '" + id + "';";
+			con.createStatement().execute(sql);
+			return true;
+		} catch (Exception e) {
+			System.out.println("Error getting a Donor.");
+			return false;
+		}
 	}
 	
-	public static boolean update(Donor donor) throws SQLException {
-		Connection con = Util.getConnection();
-		StringBuilder b = new StringBuilder("UPDATE user SET ")
-			.append(" name = '").append(donor.getName()).append("',")
-			.append(" lastname = '").append(donor.getLastname()).append("',")
-			.append(" address1 = '").append(donor.getAddress1()).append("',")
-			.append(" address2 = '").append(donor.getAddress2()).append("',")
-			.append(" city = '").append(donor.getCity()).append("',")
-			.append(" state = '").append(donor.getState()).append("',")
-			.append(" zip = '").append(donor.getZip()).append("',")
-			.append(" telephone = '").append(donor.getTelephone()).append("',")
-			.append(" email = '").append(donor.getEmail()).append("',")
-			.append(" notes = '").append(donor.getNotes()).append("',")
-			.append(" hidden = ").append(donor.isHidden() ? 1 : 0)
-			.append(" WHERE id = ").append(donor.getId()).append(";");
-		return con.createStatement().execute(b.toString());
+	public static boolean update(Donor donor) {
+		try {
+			Connection con = Util.getConnection();
+			StringBuilder b = new StringBuilder("UPDATE dm.donor SET ")
+				.append(" name = '").append(donor.getName()).append("',")
+				.append(" lastname = '").append(donor.getLastname()).append("',")
+				.append(" address1 = '").append(donor.getAddress1()).append("',")
+				.append(" address2 = '").append(donor.getAddress2()).append("',")
+				.append(" city = '").append(donor.getCity()).append("',")
+				.append(" state = '").append(donor.getState()).append("',")
+				.append(" zip = '").append(donor.getZip()).append("',")
+				.append(" telephone = '").append(donor.getTelephone()).append("',")
+				.append(" email = '").append(donor.getEmail()).append("',")
+				.append(" notes = '").append(donor.getNotes()).append("',")
+				.append(" hidden = ").append(donor.isHidden() ? 1 : 0)
+				.append(" WHERE id = ").append(donor.getId()).append(";");
+			String sql = b.toString();
+			return con.createStatement().execute(sql);
+		} catch (Exception e) {
+			System.out.println("Error getting a Donor.");
+			return false;
+		}
 	}
 	
-	public static Donor add(Donor donor) throws SQLException {
-		Connection con = Util.getConnection();
-		StringBuilder b = new StringBuilder("INSERT INTO dm.donor (id, name, lastname, address1, address2, city, state, zip, telephone, email, notes, hidden) VALUES(")
-			.append(donor.getId()).append(",")
-			.append("'").append(donor.getName()).append("',")
-			.append("'").append(donor.getLastname()).append("',")
-			.append("'").append(donor.getAddress1()).append("',")
-			.append("'").append(donor.getAddress2()).append("',")
-			.append("'").append(donor.getCity()).append("',")
-			.append("'").append(donor.getState()).append("',")
-			.append("'").append(donor.getZip()).append("',")
-			.append("'").append(donor.getTelephone()).append("',")
-			.append("'").append(donor.getEmail()).append("',")
-			.append("'").append(donor.getNotes()).append("',")
-			.append(donor.isHidden()).append(");");	
-		con.createStatement().execute(b.toString());
-		ResultSet rs = con.createStatement().executeQuery("SELECT LAST_INSERT_ID()");
-		if (rs.next()) donor.setId(rs.getInt(1));
-		return donor;
+	public static Donor add(Donor donor) {
+		try {
+			Connection con = Util.getConnection();
+			StringBuilder b = new StringBuilder("INSERT INTO dm.donor (id, name, lastname, address1, address2, city, state, zip, telephone, email, notes, hidden) VALUES(")
+				.append(donor.getId()).append(",")
+				.append("'").append(donor.getName()).append("',")
+				.append("'").append(donor.getLastname()).append("',")
+				.append("'").append(donor.getAddress1()).append("',")
+				.append("'").append(donor.getAddress2()).append("',")
+				.append("'").append(donor.getCity()).append("',")
+				.append("'").append(donor.getState()).append("',")
+				.append("'").append(donor.getZip()).append("',")
+				.append("'").append(donor.getTelephone()).append("',")
+				.append("'").append(donor.getEmail()).append("',")
+				.append("'").append(donor.getNotes()).append("',")
+				.append(donor.isHidden()).append(");");	
+			String sql = b.toString();
+			con.createStatement().execute(sql);
+			ResultSet rs = con.createStatement().executeQuery("SELECT LAST_INSERT_ID()");
+			if (rs.next()) donor.setId(rs.getInt(1));
+			return donor;
+		} catch (Exception e) {
+			System.out.println("Error getting a Donor.");
+			return null;
+		}
 	}
 
 }

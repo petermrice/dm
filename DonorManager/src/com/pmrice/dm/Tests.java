@@ -5,11 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
-import java.sql.SQLException;
+import java.sql.Date;
 
 import org.junit.jupiter.api.Test;
 
+import com.pmrice.dm.model.Donation;
 import com.pmrice.dm.model.Donor;
+import com.pmrice.dm.model.Pledge;
 import com.pmrice.dm.model.User;
 import com.pmrice.dm.util.Currency;
 import com.pmrice.dm.util.Util;
@@ -26,7 +28,7 @@ class Tests {
 		assertEquals("$123,456.78",Currency.getDisplay("123456.78", true));
 		assertEquals("$23,456.78",Currency.getDisplay("23456.78", true));
 		assertEquals("$3,456.78",Currency.getDisplay("3456.78", true));
-		assertEquals("$456.78",Currency.getDisplay("456.78", true));
+		assertEquals("456.78",Currency.getDisplay("456.78", false));
 		assertEquals("$56.78",Currency.getDisplay("56.78", true));
 		assertEquals("$6.78",Currency.getDisplay("6.78", true));
 		assertEquals("$0.78",Currency.getDisplay("0.78", true));
@@ -40,33 +42,73 @@ class Tests {
 	}
 	
 	@Test
+	void donationTest() {
+		// create donor for donation
+		Donor donor = new Donor();
+		donor.setName("Peter");
+		donor = Donor.add(donor);
+		// create and test new Donation
+		Donation don = new Donation();
+		don.setDonorId(donor.getId());
+		don = Donation.add(don);
+		assertNotNull(don);
+		Date today = Util.today();
+		don.setDate(today);
+		assertTrue(Donation.update(don));
+		Donation don2 = Donation.get(don.getId());
+		assertNotNull(don2);
+		assertEquals(don.getId(), don2.getId());
+		assertTrue(Donation.remove(don.getId()));
+		// remove donor
+		assertTrue(Donor.remove(donor.getId()));
+	}
+	
+	@Test
+	void pledgeTest() {
+		// create donor for pledge
+		Donor donor = new Donor();
+		donor.setName("Peter");
+		donor = Donor.add(donor);
+		// create and test new Pledge
+		Pledge pledge = new Pledge();
+		pledge.setDonorId(donor.getId());
+		pledge = Pledge.add(pledge);
+		assertNotNull(pledge);
+		Date today = Util.today();
+		pledge.setBeginDate(today);
+		pledge.setFulfilled(true);
+		assertTrue(Pledge.update(pledge));
+		Pledge pledge2 = Pledge.get(pledge.getId());
+		assertNotNull(pledge2);
+		assertEquals(pledge.getId(), pledge2.getId());
+		assertTrue(pledge.isFulfilled());
+		assertTrue(Pledge.remove(pledge.getId()));
+		// remove donor
+		assertTrue(Donor.remove(donor.getId()));
+	}
+	
+	@Test
 	void donorTest() {
-		try {
-			Donor donor = new Donor();
-			donor.setName("Peter");
-			donor = Donor.add(donor);
-			donor.setEmail("");
-			assertTrue(Donor.update(donor));
-			assertEquals("abc@xyz.com", donor.getEmail());
-			assertTrue(Donor.remove(donor.getId()));
-		} catch (SQLException e) {
-			System.out.println(e);
-		}
+		Donor donor = new Donor();
+		donor.setName("Peter");
+		donor = Donor.add(donor);
+		assertNotNull(donor);
+		donor.setEmail("abc@xyz.com");
+		Donor.update(donor);
+		donor = Donor.get(donor.getId());
+		assertEquals("abc@xyz.com", donor.getEmail());
+		assertTrue(Donor.remove(donor.getId()));
 	}
 	
 	@Test
 	void userTest() {
-		try {
-			User user = new User("admin","admin",true);
-			assertTrue(User.add(user));
-			user.setPassword("Admin");
-			assertTrue(User.update(user));
-			user = User.get("admin");
-			assertEquals("Admin", user.getPassword());
-			assertTrue(User.remove("admin"));
-		} catch (SQLException e) {
-			System.out.println(e);
-		}
+		User user = new User("admin","admin",true);
+		assertTrue(User.add(user));
+		user.setPassword("Admin");
+		User.update(user);
+		user = User.get("admin");
+		assertEquals("Admin", user.getPassword());
+		assertTrue(User.remove("admin"));
 		
 	}
 

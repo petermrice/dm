@@ -39,33 +39,68 @@ public class User {
 		this.admin = admin ? 1 : 0;
 	}
 	
-	public static User get(String userid) throws SQLException {
-		Connection con = Util.getConnection();
-		ResultSet rs = con.createStatement().executeQuery("SELECT * FROM `user` WHERE `userid` = '" + userid + "';");
-		if (rs.next()) {
-			User user = new User(rs.getString("userid"), rs.getString("password"), rs.getInt("admin") == 1 ? true : false);
-			return user;
-		} else {
+	public static User get(String userid) {
+		try {
+			Connection con = Util.getConnection();
+			String sql = "SELECT * FROM dm.user WHERE userid = '" + userid + "';";
+			ResultSet rs = con.createStatement().executeQuery(sql);
+			if (rs.next()) {
+				User user = new User(rs.getString("userid"), rs.getString("password"), rs.getInt("admin") == 1 ? true : false);
+				return user;
+			} else {
+				return null;
+			}
+		} catch (SQLException e) {
+			System.out.println("Error getting a User");
 			return null;
 		}
 	}
 	
-	public static boolean remove(String userid) throws SQLException {
-		Connection con = Util.getConnection();
-		return con.createStatement().execute("REMOVE FROM user WHERE userid = '" + userid + "';");
+	public static boolean remove(String userid) {
+		try {
+			Connection con = Util.getConnection();
+			String sql = "DELETE FROM dm.user WHERE userid = '" + userid + "';";
+			con.createStatement().execute(sql);
+			User u = get(userid);
+			return u == null;
+		} catch (SQLException e) {
+			System.out.println("Error removing a User");
+			return false;
+		}
 	}
 	
-	public static boolean update(User user) throws SQLException {
-		Connection con = Util.getConnection();
-		return con.createStatement().execute(
-				"UPDATE user SET password = '" + user.getPassword() + "' SET admin = " + user.admin + " + WHERE userid = '" + user.getUserid() + "';");
+	/**
+	 * Testing for update requires pulling the result to see if the update worked.
+	 * @param user
+	 */
+	public static void update(User user) {
+		try {
+			Connection con = Util.getConnection();
+			String sql = "UPDATE dm.user SET password = '" + user.getPassword() + "', admin = " + user.admin + " WHERE userid = '" + user.getUserid() + "';";
+			con.createStatement().execute(sql);
+		} catch (SQLException e) {
+			System.out.println("Error updating a User");
+		}
 	}
 	
-	public static boolean add(User user) throws SQLException {
-		Connection con = Util.getConnection();
-		User u = get(user.getUserid());
-		if (u == null) return con.createStatement().execute(
-				"INSERT INTO user (userid, password, admin) VALUES('" + user.getUserid() + "','" + user.getPassword() + "','" + user.admin + "';");
-		else return false;
+	/**
+	 * Since the id of the User is the userid, the id is not generated
+	 * 
+	 * @param user
+	 * @return
+	 * @throws SQLException
+	 */
+	public static boolean add(User user) {
+		try {
+			Connection con = Util.getConnection();
+			User u = get(user.getUserid());
+			if (u != null) return false;
+			String sql = "INSERT INTO dm.user (userid, password, admin) VALUES('" + user.getUserid() + "','" + user.getPassword() + "','" + user.admin + "');";
+			con.createStatement().execute(sql);
+			return true;
+		} catch (SQLException e) {
+			System.out.println("Error adding a User");
+			return false;
+		}
 	}
 }
