@@ -117,12 +117,14 @@ public class Pledge implements Serializable {
 	
 	public static List<Pledge> getPledgeListForDonor(int donorId){
 		List<Pledge> list = new ArrayList<Pledge>();
+		Pledge pledge = new Pledge(0, "", Util.today());
+		list.add(pledge);
 		Connection con = Util.getConnection();
 		String sql = "SELECT id, description, begin_date FROM dm.pledge WHERE donor_id = '" + donorId + "';";
 		try {
 			ResultSet rs = con.createStatement().executeQuery(sql);
 			while (rs.next()) {
-				Pledge pledge = new Pledge(
+				pledge = new Pledge(
 					rs.getInt("id"),
 					rs.getString("description"),  
 					Util.storageToDisplay(rs.getString("begin_date")));

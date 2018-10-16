@@ -17,7 +17,7 @@ import com.pmrice.dm.model.Pledge;
  * Servlet implementation class MainServlet
  */
 @WebServlet(
-		description = "The one servlet for the Donor Manager app", 
+		description = "The servlet for editing donors, donations and pledges", 
 		urlPatterns = { 
 				"/MainServlet", 
 				"/main"
@@ -166,7 +166,7 @@ public class MainServlet extends HttpServlet {
 		request.setAttribute("donor_id", donor_id);
 		request.setAttribute("donation_id", donation_id);
 		request.setAttribute("pledge_id", pledge_id);
-		request.getRequestDispatcher("/editDonation.jsp").forward(request, response);
+		request.getRequestDispatcher("/editDonationPledge.jsp").forward(request, response);
 	}
 
 	/**

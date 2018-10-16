@@ -17,21 +17,24 @@
 			return false;
 		}
 	}
-	
-	function warnOnDeletion() {
-		alert("This action will delete the data from the system.\nUse with care!")
-	}
-
 
 	</script>
 	<style>
 	
-		ul {
+		ul.list {
+			overflow:hidden; 
+			overflow-y:scroll;
+			list-style-type: none;
+			margin: 20px;
+			padding: 0;
+			}
+	
+		ul.menu {
 			overflow:hidden; 
 			overflow-y:scroll;
 			list-style-type: none;
 			margin: 0;
-			padding: 0''}
+			padding: 0;}
 	
 		.textinput {
 			width:300px;
@@ -59,6 +62,7 @@
 <title>Donor Manager - Donor</title>
 </head>
 <body>
+	<ul><li><a href="sendEmail.jsp">Send Email</a></ul>
 	<h2>View and Edit Donor Information</h2>
 
 <div id="donorBlock" >
@@ -83,38 +87,42 @@
 					<input id="donorSave" type="submit" value="SAVE"></td></tr>
 		</table>
 	</form>
-	<ul>
-	<% for (int i = 0; i < donors.size(); i++) { %>
- 	<li>
- 		<form action="main" method="post">
- 		<input type="submit" value="<%=donors.get(i).toString()%>" style="font-size:100%"/>
- 		<input type="hidden" name="action" value="show_donor"/>
- 		<input type="hidden" name="donor_id" value="<%=Integer.toString(donors.get(i).getId())%>"/>
- 		</form>
- 	</li>
-	<%}%>
-	</ul>
 	</td>
 	<td>
-		<table><tr><td>
-		<form action="main" method="post" onSubmit="return warnOnDeletion()">
-	 		<input type="submit" value="Delete this Donor" class="menubutton" onmouseover="warnOnDeletion()">
+		<ul class="list">
+		<% for (int i = 0; i < donors.size(); i++) { %>
+	 	<li>
+	 		<form action="main" method="post">
+	 		<input type="submit" value="<%=donors.get(i).toString()%>" style="font-size:100%"/>
+	 		<input type="hidden" name="action" value="show_donor"/>
+	 		<input type="hidden" name="donor_id" value="<%=Integer.toString(donors.get(i).getId())%>"/>
+	 		</form>
+	 	</li>
+		<%}%>
+		</ul>
+		<br>
+		<ul class="menu">
+		<li>
+			<form action="main" method="post" onSubmit="return warnOnDeletion()">
+	 		<input type="submit" value="Delete this Donor" class="menubutton" onmouseover="this.style="color:red">
 	 		<input type="hidden" name="donor_id" value="<%=donor.getId()%>">
 	 		<input type="hidden" name="action" value="delete_donor">
-		</form>
-		<form action="main" method="post">
+			</form>
+		</li>
+		<li><form action="main" method="post">
 	 		<input type="submit" value="Donations for this Donor" class="menubutton">
 	 		<input type="hidden" name="action" value="show_donation">
 	 		<input type="hidden" name="donor_id" value="<%=donor.getId()%>">
 	 		<input type="hidden" name="donation_id" value="0">
-		</form>
-		</td><td>
-		<form action="main" method="post">
+			</form>
+		</li>
+		<li>
+			<form action="main" method="post">
 	 		<input type="submit" value="Logout" id="logout" class="menubutton">
 	 		<input type="hidden" name="action" value="logout">
-		</form>
-		</td><td>
-		</td></tr></table>
+			</form>
+		</li>
+		</ul>
 	</td>
 </tr></table>	
 </div>

@@ -41,27 +41,35 @@
 	</script>
 	<style>
 	
-		ul {
+		ul.list {
+			overflow:hidden; 
+			overflow-y:scroll;
+			list-style-type: none;
+			margin: 20px;
+			padding: 0;
+			}
+	
+		ul.menu {
 			overflow:hidden; 
 			overflow-y:scroll;
 			list-style-type: none;
 			margin: 0;
-			padding: 0''}
+			padding: 0;}
 	
 		.textinput {
 			width:300px;
-		}
+			}
+		
+		.menubutton{
+			border:line;
+			color:BLue;
+			font-size: 20px;}
 				
 		#donationSave {
 			border:line;
-			color:Blue;
+			color:Tomato;
 			font-size: 20px;}
-								
-		#donationDelete {
-			border:line;
-			color:Green;
-			font-size: 20px;}
-								
+																
 		#donationBlock {
 			width:400px;
 			height:500px;
@@ -70,7 +78,7 @@
 			}
 		
 		#pledgeBlock {
-		width:400px;
+			width:400px;
 			height:500px;
 			border-style:none;
 			margin:5px;}
@@ -97,11 +105,30 @@
 					<input type="hidden" name="action" value="save_donation"></td></tr>
 		</table>
 	</form>
-	<ul>
+	
+	<ul class="menu">
+	<li>
+	<form action="main" method="post" >
+ 		<input type="submit" value="Delete this Donation" id="donationDelete" class="menubutton" onmouseover="warnOnDeletion()"/>
+ 		<input type="hidden" name="donor_id" value="<%=Integer.toString(donorId)%>"/>
+ 		<input type="hidden" name="donation_id" value="<%=Integer.toString(donationId)%>"/>
+ 		<input type="hidden" name="action" value="delete_donation"/>
+	</form>
+	</li>
+	<li>
+	<form action="main" method="post">
+ 		<input type="submit" value="Logout" id="logout" class="menubutton">
+ 		<input type="hidden" name="action" value="logout">
+	</form>
+	</li>
+	</ul>
+	
+	
+	<ul class="list">
 	<% for (int i = 0; i < donations.size(); i++) { %>
  	<li>
  		<form action="main" method="post">
- 		<input type="submit" value="<%=i == 0 ? "New Donation" : donations.get(i).toString()%>" style="font-size:100%"/>
+ 		<input type="submit" value="<%=i == 0 ? "New Donation" : donations.get(i).toString()%>" style="font-size:100%" class="list"/>
  		<input type="hidden" name="action" value="show_donation"/>
  		<input type="hidden" name="donor_id" value="<%=Integer.toString(donorId)%>"/>
  		<input type="hidden" name="donation_id" value="<%=Integer.toString(donations.get(i).getId())%>" />
@@ -109,16 +136,6 @@
  	</li>
 	<%}%>
 	</ul>
-	<form action="main" method="post" >
- 		<input type="submit" value="Delete this Donation" id="donationDelete" onmouseover="warnOnDeletion()"/>
- 		<input type="hidden" name="donor_id" value="<%=Integer.toString(donorId)%>"/>
- 		<input type="hidden" name="donation_id" value="<%=Integer.toString(donationId)%>"/>
- 		<input type="hidden" name="action" value="delete_donation"/>
-	</form>
-	<form action="main" method="post">
- 		<input type="submit" value="Logout" id="logout" class="menubutton">
- 		<input type="hidden" name="action" value="logout">
-	</form>
 	
 </div>
 </td><td>
@@ -140,7 +157,25 @@
 					<input type="hidden" name="action" value="save_pledge"/></td></tr>
 		</table>
 	</form>
-	<ul>
+	<ul class="menu">
+		<li>
+			<form action="main" method="post">
+	 		<input type="submit" value="Delete this Pledge" id="pledgeDelete" class="menubutton"/>
+	 		<input type="hidden" name="donor_id" value="<%=Integer.toString(donorId)%>"/>
+	 		<input type="hidden" name="pledge_id" value="<%=Integer.toString(pledgeId)%>"/>
+	 		<input type="hidden" name="action" value="delete_pledge"/>
+			</form>
+		</li>
+		<li>
+			<form action="main" method="post">
+	 		<input type="submit" value="Logout" id="logout" class="menubutton">
+	 		<input type="hidden" name="action" value="logout">
+			</form>
+		</li>
+	</ul>
+	
+	
+	<ul class="list">
 	<% for (int i = 0; i < pledges.size(); i++) { %>
  	<li>
  		<form action="main" method="post">
@@ -152,16 +187,6 @@
  	</li>
 	<%}%>
 	</ul>
-	<form action="main" method="post">
- 		<input type="submit" value="Delete this Pledge" id="pledgeDelete" onmouseover="warnOnDeletion()"/>
- 		<input type="hidden" name="donor_id" value="<%=Integer.toString(donorId)%>"/>
- 		<input type="hidden" name="pledge_id" value="<%=Integer.toString(pledgeId)%>"/>
- 		<input type="hidden" name="action" value="delete_pledge"/>
-	</form>
-	<form action="main" method="post">
- 		<input type="submit" value="Logout" id="logout" class="menubutton">
- 		<input type="hidden" name="action" value="logout">
-	</form>
 </div></td></tr>
 </table>
 
