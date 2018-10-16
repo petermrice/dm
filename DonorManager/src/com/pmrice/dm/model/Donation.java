@@ -2,9 +2,12 @@ package com.pmrice.dm.model;
 
 import java.io.Serializable;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.pmrice.dm.util.Currency;
 import com.pmrice.dm.util.Util;
 
 public class Donation implements Serializable {
@@ -13,7 +16,7 @@ public class Donation implements Serializable {
 	
 	private int id;
 	private int donor_id;
-	private Date date = Util.today();
+	private String date = "1970-00-00";
 	private String description = "";
 	private String amount = "0.00";
 	private String note = "";
@@ -22,7 +25,13 @@ public class Donation implements Serializable {
 		
 	}
 	
-	public Donation(int id, Date date, String description, String amount, String note) {
+	public Donation(int id, String date, String amount) {
+		setId(id);
+		setDate(date); 
+		setAmount(amount);
+	}
+	
+	public Donation(int id, String date, String description, String amount, String note) {
 		super();
 		this.id = id;
 		this.date = date;
@@ -45,10 +54,18 @@ public class Donation implements Serializable {
 		this.donor_id = id;
 	}
 	
-	public Date getDate() {
+	/**
+	 * Gets the date in display format
+	 * @return
+	 */
+	public String getDate() {
 		return date;
 	}
-	public void setDate(Date date) {
+	/**
+	 * Saves the date in storage format
+	 * @param date
+	 */
+	public void setDate(String date) {
 		this.date = date;
 	}
 	
@@ -72,6 +89,10 @@ public class Donation implements Serializable {
 	public void setNote(String note) {
 		this.note = note;
 	}
+	
+	public String toString() {
+		return this.getDate() + " $" + this.getAmount();
+	}
 		
 	public static Donation get(int id)  {
 		try {
@@ -81,14 +102,49 @@ public class Donation implements Serializable {
 			if (!rs.next()) return null;
 			Donation donation = new Donation(
 				rs.getInt("id"),
-				rs.getDate("date"), 
+				Util.storageToDisplay(rs.getString("date")), 
 				rs.getString("description"), 
-				rs.getString("amount"), 
+				Currency.getDisplay(rs.getString("amount"), false), 
 				rs.getString("note"));
 			return donation;
 		} catch (Exception e) {
 			System.out.println("Error getting a Donation.");
 			return null;
+		}
+	}
+	
+	/**
+	 * Returns a list of Donation's for a specific Donor. Only the date and amount fields 
+	 * are set. This is used only for display of the list in the browser.
+	 * 
+	 * @param donor_id
+	 * @return
+	 */
+	public static List<Donation> getForDonor(int donor_id){
+		List<Donation> list = new ArrayList<Donation>();
+		Donation nd = new Donation();
+		nd.setDonorId(donor_id);
+		list.add(nd);
+		try {
+			Connection con = Util.getConnection();
+			ResultSet rsc = con.createStatement().executeQuery("SELECT COUNT(*) FROM dm.donation WHERE donor_id = '" + donor_id + "'");
+			int count = 0;
+			if (rsc.next()) count = rsc.getInt(1);
+			if (count == 0) {
+				return list; // otherwise the next query fails
+			}
+			String sql = "SELECT id, date, amount FROM dm.donation WHERE donor_id = '" + donor_id + "' ORDER BY date DESC;";
+			ResultSet rs = con.createStatement().executeQuery(sql);
+			while(rs.next()) {
+				Donation d = new Donation(
+						rs.getInt("id"),
+						Util.storageToDisplay(rs.getString("date")),
+						Currency.getDisplay(rs.getString("amount"), false));
+				list.add(d);
+			}
+			return list;
+		} catch (SQLException e) {
+			return list;
 		}
 	}
 	
@@ -108,9 +164,10 @@ public class Donation implements Serializable {
 		try {
 			Connection con = Util.getConnection();
 			StringBuilder b = new StringBuilder("UPDATE dm.donation ")
-				.append("SET date = '").append(donation.getDate()).append("',")
+				.append("SET date = '").append(Util.displayToStorage(donation.getDate())).append("',")
+				.append(" donor_id = ").append(donation.getDonorId()).append(",")
 				.append(" description = '").append(donation.getDescription()).append("',")
-				.append(" amount = '").append(donation.getAmount()).append("',")
+				.append(" amount = '").append(Currency.store(donation.getAmount())).append("',")
 				.append(" note = '").append(donation.getNote()).append("' ")
 				.append("WHERE id = ").append(donation.getId()).append(";");
 			String sql = b.toString();
@@ -125,11 +182,12 @@ public class Donation implements Serializable {
 	public static Donation add(Donation donation) {
 		try {
 			Connection con = Util.getConnection();
-			StringBuilder b = new StringBuilder("INSERT INTO dm.donation (id, date, description, amount, note) VALUES(")
+			StringBuilder b = new StringBuilder("INSERT INTO dm.donation (id, donor_id, date, description, amount, note) VALUES(")
 				.append(donation.getId()).append(",")
-				.append("'").append(donation.getDate()).append("',")
+				.append(donation.getDonorId()).append(",")
+				.append("'").append(Util.displayToStorage(donation.getDate())).append("',")
 				.append("'").append(donation.getDescription()).append("',")
-				.append("'").append(donation.getAmount()).append("',")
+				.append("'").append(Currency.store(donation.getAmount())).append("',")
 				.append("'").append(donation.getNote()).append("');");
 			String sql = b.toString();
 			con.createStatement().execute(sql);

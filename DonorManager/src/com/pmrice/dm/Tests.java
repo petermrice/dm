@@ -50,14 +50,20 @@ class Tests {
 		// create and test new Donation
 		Donation don = new Donation();
 		don.setDonorId(donor.getId());
+		don.setDate("10/12/2018");
+		don.setAmount("$3,500.00");
+		don.setDescription("test");
 		don = Donation.add(don);
 		assertNotNull(don);
-		Date today = Util.today();
-		don.setDate(today);
+		don.setAmount("$3,500.44");
+		don.setDescription("test");
 		assertTrue(Donation.update(don));
 		Donation don2 = Donation.get(don.getId());
 		assertNotNull(don2);
 		assertEquals(don.getId(), don2.getId());
+		assertEquals("3,500.44", don2.getAmount());
+		assertEquals("10/12/2018", don2.getDate());
+		assertEquals("test", don2.getDescription());
 		assertTrue(Donation.remove(don.getId()));
 		// remove donor
 		assertTrue(Donor.remove(donor.getId()));
@@ -74,7 +80,7 @@ class Tests {
 		pledge.setDonorId(donor.getId());
 		pledge = Pledge.add(pledge);
 		assertNotNull(pledge);
-		Date today = Util.today();
+		String today = Util.today();
 		pledge.setBeginDate(today);
 		pledge.setFulfilled(true);
 		assertTrue(Pledge.update(pledge));

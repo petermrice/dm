@@ -4,8 +4,9 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * Currency is stored as a string, no commas, no currency symbol, with two cents digits showing
-	   the max value allowed is 999999.99
+ * Currency is stored as a string, no commas, no currency symbol. The value is a whole
+ * number equal to the dollar value X 100.
+ * The max value allowed is 999,999,999.99.
 	   
  * @author peterrice
  *
@@ -43,6 +44,12 @@ public class Currency {
 		return new Currency(new BigDecimal(store).multiply(ad));
 	}
 	
+	/**
+	 * Add up a list of Currency values
+	 * 
+	 * @param list
+	 * @return
+	 */
 	public Currency total(List<Currency> list) {
 		if (list.size() == 0) return new Currency();
 		BigDecimal sum = new BigDecimal(list.get(0).store);
@@ -66,53 +73,112 @@ public class Currency {
 		return store;
 	}
 	
-	public static String getDisplay(String store, boolean showCurrencySymbol) {
-		if (store == null || store.length() == 0) return "0.00";
-		if (store.length() < 4) return "0" + store;
-		String cents = store.substring(store.length() - 3); // less than 3 chars is an error.
-		store = store.substring(0, store.length() - 3);
-		String hundreds = "";
-		String thousands = "";
-		if (store.length() > 3) {
-			thousands = store.substring(0, store.length() - 3);
-			hundreds = store.substring(store.length() - 3);
-		} else {
-			hundreds = store;
+	/**
+	 * Validate a user entry. Using , to separate thousands is OK,
+	 * but it is also OK to misuse them. When storing, they are removed anyway.
+	 * 
+	 * @param in
+	 * @return
+	 */
+	public static boolean validate(String in) {
+		char[] chars = in.toCharArray();
+		boolean foundDecimal = false;
+		for (int i = 0; i < chars.length; i++) {
+			char ch = chars[i];
+			if (ch == '.') {
+				if (foundDecimal) return false; // one too many!
+				foundDecimal = true;
+			} else if (ch == '$') {
+				if (i != 0) return false;
+			} else {
+				if (Character.isDigit(ch) || ch == ',') continue;
+				return false;
+			}
 		}
-		StringBuilder sb = new StringBuilder();
-		if (showCurrencySymbol) sb.append("$");
-		if (thousands.length() > 0) sb.append(thousands).append(",").append(hundreds).append(cents);
-		else if (hundreds.length() > 0) sb.append(hundreds).append(cents);
-		return sb.toString();
+		return true;
+	}
+	
+	/**
+	 * Display = store X 100, with the decimal point and commas added to separate blocks of three digits.
+	 * @param store
+	 * @param showCurrencySymbol
+	 * @return
+	 */
+	public static String getDisplay(String store, boolean showCurrencySymbol) {
+		boolean b = showCurrencySymbol;
+		if (store == null || store.length() == 0) return "0.00";
+		if (store.length() == 1) return b ? ("$0.0" + store) : ("0.0" + store); 
+		if (store.length() == 2) return b ? ("$0."  + store) : ("0."  + store); 
+		String thousands = "";
+		String millions = "";
+		String dollars = store.substring(0, store.length() - 2);
+		String cents = store.substring(store.length() - 2, store.length());
+		if (dollars.length() > 3) {
+			thousands = dollars.substring(0, dollars.length() - 3);
+			dollars = dollars.substring(dollars.length() - 3, dollars.length());
+		}
+		if (thousands.length() > 3) {
+			millions = thousands.substring(0, thousands.length() - 3);
+			thousands = thousands.substring(thousands.length() - 3, thousands.length());
+		}
+		if (thousands.length() == 0) return (b ? "$" : "") + dollars + "." + cents;
+		if (millions.length() == 0) return (b ? "$" : "") + thousands + "," + dollars + "." + cents;
+		return (b ? "$" : "") + millions + "," + thousands + "," + dollars + "." + cents;
 	}
 	
 	public static String store (String display) {
-		if (display.charAt(0) == '$') display = display.substring(1);
-		int dec = -1;
-		if ((dec = display.indexOf(",")) > 0) display = display.substring(0,  dec) + display.substring(dec + 1);
-		dec = display.indexOf(".");
-		if (dec == -1) display = display + ".00";
-		else if (dec == (display.length() - 1)) display = display + "00";
-		else if (dec == (display.length() - 2)) display = display + "0";
-		if (display.length() < 4) display = "0" + display;
-		return display.trim();
+		// remove commas, spaces, etc. (not periods)
+		String dollars = "";
+		String cents = "";
+		int c = display.indexOf('.');
+		if (c == -1) {
+			dollars = display;
+		} else {
+			dollars = display.substring(0, c);
+			cents = display.substring(c + 1);
+		}
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < dollars.length(); i++) {
+			if (Character.isDigit(dollars.charAt(i))) sb.append(dollars.charAt(i));
+		}
+		dollars = sb.toString();
+		sb = new StringBuilder();
+		for (int i = 0; i < cents.length(); i++) {
+			if (Character.isDigit(cents.charAt(i))) sb.append(cents.charAt(i));
+		}
+		cents = sb.toString();
+		if (cents.length() == 0) cents = "00";
+		if (cents.length() == 1) cents = cents + "0";
+		else cents = cents.substring(0,2);
+		return dollars + cents;
 	}
 	
 	public static void main(String[] args) {
 		System.out.println(store("$56.99"));
 		System.out.println(store("4,000.8"));
+		System.out.println(store("4,56,8.00"));
 		System.out.println(store("355"));
 		System.out.println(store("355."));
 		System.out.println(store("$ 65,778.03"));
-		System.out.println(getDisplay("123456.78", true));
-		System.out.println(getDisplay("23456.78", true));
-		System.out.println(getDisplay("3456.78", true));
-		System.out.println(getDisplay("456.78", true));
-		System.out.println(getDisplay("56.78", true));
-		System.out.println(getDisplay("6.78", true));
-		System.out.println(getDisplay("0.78", true));
+		System.out.println(getDisplay("55612345678", true));
+		System.out.println(getDisplay("5612345678", true));
+		System.out.println(getDisplay("512345678", true));
+		System.out.println(getDisplay("12345678", true));
+		System.out.println(getDisplay("2345678", true));
+		System.out.println(getDisplay("345678", true));
+		System.out.println(getDisplay("45678", true));
+		System.out.println(getDisplay("5678", true));
+		System.out.println(getDisplay("678", true));
+		System.out.println(getDisplay("78", true));
+		System.out.println(getDisplay("8", true));
+		System.out.println(getDisplay("55435699",false));
 		BigDecimal bd = new BigDecimal(45.678);
+		System.out.println(validate("$56,988.01"));
 		System.out.println(new Currency(bd).toString());
+		System.out.println(validate("$56.78"));
+		System.out.println(validate("56.8"));
+		System.out.println(validate("$5,6.78"));
+		
 	}
 
 }

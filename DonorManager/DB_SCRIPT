@@ -16,12 +16,14 @@ CREATE TABLE donor (
 	telephone varchar(80) DEFAULT "", 
 	email varchar(80) DEFAULT "", 
 	notes varchar(80) DEFAULT "", 
-	hidden tinyint(1) DEFAULT 0, PRIMARY KEY (id)
+	hidden tinyint(1) DEFAULT 0, 
+	PRIMARY KEY (id)
 ) ENGINE=MYISAM;
 
 CREATE TABLE `donation` (
 	`id` int NOT NULL AUTO_INCREMENT,
-	`date` DATE DEFAULT NULL, 
+	`donor_id` int DEFAULT 0,
+	`date` VARCHAR(12) DEFAULT "", 
 	`description` varchar(80) DEFAULT "", 
 	`amount` varchar(80) DEFAULT "",
 	`note` varchar(80) DEFAULT "",
@@ -40,8 +42,8 @@ CREATE TABLE `pledge` (
 	`donor_id` int NOT NULL,
 	`description`varchar(80) DEFAULT "",
 	`amount` varchar(80) DEFAULT "",
-	`begin_date` DATE DEFAULT NULL,
-	`end_date` DATE DEFAULT NULL,
+	`begin_date` VARCHAR(12) DEFAULT "",
+	`end_date` VARCHAR(12) DEFAULT "",
 	`fulfilled` tinyint(1) DEFAULT 0,
 	`cancelled` tinyint(1) DEFAULT 0,
 	`note` varchar(255),

@@ -2,9 +2,12 @@ package com.pmrice.dm.model;
 
 import java.io.Serializable;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.pmrice.dm.util.Currency;
 import com.pmrice.dm.util.Util;
 
 public class Pledge implements Serializable {
@@ -15,8 +18,8 @@ public class Pledge implements Serializable {
 	private int donor_id;
 	private String description = "";
 	private String amount = "0.00";
-	private Date begin_date = Util.today();
-	private Date end_date = Util.today();
+	private String begin_date = Util.today();
+	private String end_date = Util.today();
 	private boolean fulfilled = false;
 	private boolean cancelled = false;
 	private String note = "";
@@ -25,7 +28,13 @@ public class Pledge implements Serializable {
 		
 	}
 	
-	public Pledge(int id, int donor_id, String description, String amount, Date begin_date, Date end_date,
+	public Pledge(int id, String description, String beginDate) {
+		setId(id);
+		setDescription(description);
+		setBeginDate(beginDate);
+	}
+	
+	public Pledge(int id, int donor_id, String description, String amount, String begin_date, String end_date,
 			boolean fulfilled, boolean cancelled, String note) {
 		super();
 		this.id = id;
@@ -67,17 +76,17 @@ public class Pledge implements Serializable {
 		this.amount = amount;
 	}
 	
-	public Date getBeginDate() {
+	public String getBeginDate() {
 		return begin_date;
 	}
-	public void setBeginDate(Date begin_date) {
+	public void setBeginDate(String begin_date) {
 		this.begin_date = begin_date;
 	}
 	
-	public Date getEndDate() {
+	public String getEndDate() {
 		return end_date;
 	}
-	public void setEndDate(Date end_date) {
+	public void setEndDate(String end_date) {
 		this.end_date = end_date;
 	}
 	
@@ -102,6 +111,29 @@ public class Pledge implements Serializable {
 		this.note = note;
 	}
 	
+	public String toString() {
+		return getDescription() + " begining on " + getBeginDate();
+	}
+	
+	public static List<Pledge> getPledgeListForDonor(int donorId){
+		List<Pledge> list = new ArrayList<Pledge>();
+		Connection con = Util.getConnection();
+		String sql = "SELECT id, description, begin_date FROM dm.pledge WHERE donor_id = '" + donorId + "';";
+		try {
+			ResultSet rs = con.createStatement().executeQuery(sql);
+			while (rs.next()) {
+				Pledge pledge = new Pledge(
+					rs.getInt("id"),
+					rs.getString("description"),  
+					Util.storageToDisplay(rs.getString("begin_date")));
+				list.add(pledge);
+			}
+		} catch (SQLException e) {
+			System.out.println(e);
+		}
+		return list;
+	}
+	
 	public static Pledge get(int id)  {
 		try {
 			Connection con = Util.getConnection();
@@ -112,9 +144,9 @@ public class Pledge implements Serializable {
 				rs.getInt("id"),
 				rs.getInt("donor_id"),
 				rs.getString("description"), 
-				rs.getString("amount"), 
-				rs.getDate("begin_date"),
-				rs.getDate("end_date"),
+				Currency.getDisplay(rs.getString("amount"), false), 
+				Util.storageToDisplay(rs.getString("begin_date")),
+				Util.storageToDisplay(rs.getString("end_date")),
 				rs.getInt("fulfilled") == 1 ? true : false,
 				rs.getInt("cancelled") == 1 ? true : false,
 				rs.getString("note"));
@@ -143,9 +175,9 @@ public class Pledge implements Serializable {
 			StringBuilder b = new StringBuilder("UPDATE dm.pledge ")
 				.append("SET donor_id = ").append(pledge.getDonorId()).append(",")
 				.append(" description = '").append(pledge.getDescription()).append("',")
-				.append(" amount = '").append(pledge.getAmount()).append("',")
-				.append(" begin_date = '").append(pledge.getBeginDate()).append("',")
-				.append(" end_date = '").append(pledge.getEndDate()).append("',")
+				.append(" amount = '").append(Currency.store(pledge.getAmount())).append("',")
+				.append(" begin_date = '").append(Util.displayToStorage(pledge.getBeginDate())).append("',")
+				.append(" end_date = '").append(Util.displayToStorage(pledge.getEndDate())).append("',")
 				.append(" fulfilled = ").append(pledge.isFulfilled()  ? 1 : 0).append(",")
 				.append(" cancelled = ").append(pledge.isCancelled()  ? 1 : 0).append(" ")
 				.append("WHERE id = ").append(pledge.getId()).append(";");
@@ -161,11 +193,13 @@ public class Pledge implements Serializable {
 	public static Pledge add(Pledge pledge) {
 		try {
 			Connection con = Util.getConnection();
-			StringBuilder b = new StringBuilder("INSERT INTO dm.pledge (id, donor_id, description, amount, fulfilled, cancelled, note) VALUES(")
+			StringBuilder b = new StringBuilder("INSERT INTO dm.pledge (id, donor_id, description, amount, begin_date, end_date, fulfilled, cancelled, note) VALUES(")
 				.append(pledge.getId()).append(",")
-				.append("'").append(pledge.getDonorId()).append("',")
+				.append("").append(pledge.getDonorId()).append(",")
 				.append("'").append(pledge.getDescription()).append("',")
-				.append("'").append(pledge.getAmount()).append("',")
+				.append("'").append(Currency.store(pledge.getAmount())).append("',")
+				.append("'").append(Util.displayToStorage(pledge.getBeginDate())).append("',")
+				.append("'").append(Util.displayToStorage(pledge.getEndDate())).append("',")
 				.append("").append(pledge.isFulfilled() ? 1 : 0).append(",")
 				.append("").append(pledge.isCancelled() ? 1 : 0).append(",")
 				.append("'").append(pledge.getNote()).append("');");

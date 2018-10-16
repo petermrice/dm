@@ -3,7 +3,8 @@ package com.pmrice.dm.model;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.pmrice.dm.util.Util;
 
@@ -20,7 +21,7 @@ public class Donor implements Serializable {
 	private String notes = "";
 	private boolean hidden = false;
 
-	public Donor(int id, String name, String lastname, String address1, String address2, String city, String state,
+	public Donor(int id, String name, String lastname, String address1, String address2, String city, String state, String country,
 			String zip, String telephone, String email, String notes, boolean hidden) {
 		super();
 		this.id = id;
@@ -31,6 +32,7 @@ public class Donor implements Serializable {
 		this.city = city;
 		this.state = state;
 		this.zip = zip;
+		this.country = country;
 		this.telephone = telephone;
 		this.email = email;
 		this.notes = notes;
@@ -39,6 +41,12 @@ public class Donor implements Serializable {
 	
 	public Donor() {
 		setId(0);
+		setName("New Donor");
+	}
+	
+	public Donor(int id, String name) {
+		setId(id);
+		setName(name);
 	}
 	
 	public int getId() {
@@ -131,6 +139,10 @@ public class Donor implements Serializable {
 		hidden = value;
 	}
 	
+	public String toString() {
+		return getName();
+	}
+	
 	public static Donor get(int id) {
 		try {
 			Connection con = Util.getConnection();
@@ -146,6 +158,7 @@ public class Donor implements Serializable {
 					rs.getString("city"), 
 					rs.getString("state"), 
 					rs.getString("zip"), 
+					rs.getString("country"),
 					rs.getString("telephone"), 
 					rs.getString("email"), 
 					rs.getString("notes"), 
@@ -180,6 +193,7 @@ public class Donor implements Serializable {
 				.append(" city = '").append(donor.getCity()).append("',")
 				.append(" state = '").append(donor.getState()).append("',")
 				.append(" zip = '").append(donor.getZip()).append("',")
+				.append(" country = '").append(donor.getCountry()).append("',")
 				.append(" telephone = '").append(donor.getTelephone()).append("',")
 				.append(" email = '").append(donor.getEmail()).append("',")
 				.append(" notes = '").append(donor.getNotes()).append("',")
@@ -196,7 +210,7 @@ public class Donor implements Serializable {
 	public static Donor add(Donor donor) {
 		try {
 			Connection con = Util.getConnection();
-			StringBuilder b = new StringBuilder("INSERT INTO dm.donor (id, name, lastname, address1, address2, city, state, zip, telephone, email, notes, hidden) VALUES(")
+			StringBuilder b = new StringBuilder("INSERT INTO dm.donor (id, name, lastname, address1, address2, city, state, zip, country, telephone, email, notes, hidden) VALUES(")
 				.append(donor.getId()).append(",")
 				.append("'").append(donor.getName()).append("',")
 				.append("'").append(donor.getLastname()).append("',")
@@ -205,6 +219,7 @@ public class Donor implements Serializable {
 				.append("'").append(donor.getCity()).append("',")
 				.append("'").append(donor.getState()).append("',")
 				.append("'").append(donor.getZip()).append("',")
+				.append("'").append(donor.getCountry()).append("',")
 				.append("'").append(donor.getTelephone()).append("',")
 				.append("'").append(donor.getEmail()).append("',")
 				.append("'").append(donor.getNotes()).append("',")
@@ -214,6 +229,33 @@ public class Donor implements Serializable {
 			ResultSet rs = con.createStatement().executeQuery("SELECT LAST_INSERT_ID()");
 			if (rs.next()) donor.setId(rs.getInt(1));
 			return donor;
+		} catch (Exception e) {
+			System.out.println("Error getting a Donor.");
+			return null;
+		}
+	}
+	
+	/**
+	 * Gets a list of Donor objects, but only the id and name fields are set.
+	 * This is used for display of list of donors on the browser.
+	 * @return
+	 */
+	public static List<Donor> getDonors(){
+		try {
+			Connection con = Util.getConnection();
+			String sql = "SELECT id, name FROM dm.donor ORDER BY lastname;";
+			ResultSet rs = con.createStatement().executeQuery(sql);
+			List<Donor> donors = new ArrayList<Donor>();
+			Donor donor = new Donor();
+			donor.setName("New Donor");
+			donors.add(donor);
+			while (rs.next()) {
+					donor = new Donor(
+					rs.getInt("id"),
+					rs.getString("name")); 
+					donors.add(donor);
+			}
+			return donors;
 		} catch (Exception e) {
 			System.out.println("Error getting a Donor.");
 			return null;
