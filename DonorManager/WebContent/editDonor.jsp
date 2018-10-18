@@ -2,9 +2,9 @@
     pageEncoding="UTF-8" import="com.pmrice.dm.model.*, com.pmrice.dm.util.*, java.util.*"%>
 <!DOCTYPE html>
 <%  
-	List<Donor> donors = (List<Donor>)request.getAttribute("donor_list");
+	List<Donor> donors = Donor.getDonors();
 	int donorId = (int)request.getAttribute("donor_id"); 
-	Donor donor = new Donor(0, "New Donor");
+	Donor donor = donors.get(0);
 	if (donorId > 0) donor = Donor.get(donorId);
 %>
 <html>
@@ -79,7 +79,7 @@
 			<tr><td>State</td><td><input type="text" class="textinput" name="state" value="<%=donor.getState()%>"></td></tr>
 			<tr><td>ZIP</td><td><input type="text" class="textinput" name="zip" value="<%=donor.getZip()%>"></td></tr>
 			<tr><td>Country</td><td><input type="text" class="textinput" name="country" value="<%=donor.getCountry()%>"></td></tr>
-			<tr><td>Telephone</td><td><input type="text" class="textinput" name="telephone" value="<%=donor.getTelephone()%>"></td></tr>
+			<tr><td>Telephone</td><td><input type="tel" placeholder="000-000-0000" class="textinput" name="telephone" value="<%=donor.getTelephone()%>"></td></tr>
 			<tr><td>EMail</td><td><input type="email" class="textinput" name="email" value="<%=donor.getEmail()%>"></td></tr>
 			<tr><td>Notes</td><td><textarea rows="3" cols="30" name="notes"> <%=donor.getNotes()%></textarea></td></tr>
 			<tr><td><input type="hidden" name="donor_id" value="<%=donor.getId()%>">
@@ -104,7 +104,7 @@
 		<ul class="menu">
 		<li>
 			<form action="main" method="post" onSubmit="return warnOnDeletion()">
-	 		<input type="submit" value="Delete this Donor" class="menubutton" onmouseover="this.style="color:red">
+	 		<input type="submit" value="Delete this Donor" class="menubutton" onmouseover="this.style=\"color:red\"">
 	 		<input type="hidden" name="donor_id" value="<%=donor.getId()%>">
 	 		<input type="hidden" name="action" value="delete_donor">
 			</form>

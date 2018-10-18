@@ -243,7 +243,7 @@ public class Donor implements Serializable {
 	public static List<Donor> getDonors(){
 		try {
 			Connection con = Util.getConnection();
-			String sql = "SELECT id, name FROM dm.donor ORDER BY lastname;";
+			String sql = "SELECT * FROM dm.donor WHERE hidden = 0 ORDER BY lastname;";
 			ResultSet rs = con.createStatement().executeQuery(sql);
 			List<Donor> donors = new ArrayList<Donor>();
 			Donor donor = new Donor();
@@ -252,7 +252,18 @@ public class Donor implements Serializable {
 			while (rs.next()) {
 					donor = new Donor(
 					rs.getInt("id"),
-					rs.getString("name")); 
+					rs.getString("name"), 
+					rs.getString("lastname"), 
+					rs.getString("address1"), 
+					rs.getString("address2"), 
+					rs.getString("city"), 
+					rs.getString("state"), 
+					rs.getString("zip"), 
+					rs.getString("country"),
+					rs.getString("telephone"), 
+					rs.getString("email"), 
+					rs.getString("notes"), 
+					rs.getBoolean("hidden"));
 					donors.add(donor);
 			}
 			return donors;

@@ -158,7 +158,6 @@ public class MainServlet extends HttpServlet {
 	
 	private void forwardToEditDonors(HttpServletRequest request, HttpServletResponse response, int donor_id) throws ServletException, IOException{
 		request.setAttribute("donor_id", donor_id);
-		request.setAttribute("donor_list", request.getSession().getAttribute("donors"));
 		request.getRequestDispatcher("/editDonor.jsp").forward(request, response);
 	}
 	
