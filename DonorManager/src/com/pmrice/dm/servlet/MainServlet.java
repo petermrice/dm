@@ -1,6 +1,8 @@
 package com.pmrice.dm.servlet;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,24 +14,24 @@ import javax.servlet.http.HttpSession;
 import com.pmrice.dm.model.Donation;
 import com.pmrice.dm.model.Donor;
 import com.pmrice.dm.model.Pledge;
+import com.pmrice.dm.model.User;
 
 /**
- * Servlet implementation class MainServlet
+ * Servlet implementation class MainServlet. Handles admin, donor, donation and pledge units.
  */
 @WebServlet(
 		description = "The servlet for editing donors, donations and pledges", 
-		urlPatterns = { 
-				"/MainServlet", 
-				"/main"
-		})
+		urlPatterns = { "/MainServlet", "/main" },
+		loadOnStartup = 0
+		)
 public class MainServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	public static MainServlet INSTANCE;
     /**
      * Default constructor. 
      */
     public MainServlet() {
-    	
+    	INSTANCE = this;
     }
 
 	/**
@@ -53,6 +55,46 @@ public class MainServlet extends HttpServlet {
 			break;
 		case "show_mail":	
 			request.getRequestDispatcher("/mail.jsp").forward(request, response);
+			break;
+			
+		case "show_user":
+			{
+			String userid = request.getParameter("userid");
+			request.setAttribute("userid", userid);
+			request.getRequestDispatcher("/admin.jsp").forward(request, response);
+			}
+			break;
+		case "save_user":
+			{
+			String userid = request.getParameter("userid");
+			String password = request.getParameter("password");
+			boolean admin = request.getParameter("admin") != null;
+			User user = new User(userid, password, admin);
+			boolean success = false;
+			if (User.isUseridInUse(userid)) {
+				success = User.update(user);
+			} else {
+				success = User.add(user);
+			}
+			if (success) {
+				request.removeAttribute("userid");
+				request.getRequestDispatcher("/admin.jsp").forward(request, response);
+			} else {
+				request.setAttribute("message", "Failed to add or update the user");
+				request.getRequestDispatcher("/admin.jsp").forward(request, response);
+			}}
+			break;
+		case "delete_user":
+			{
+			String userid = request.getParameter("userid");
+			boolean success = User.remove(userid);
+			if (!success) {
+				request.setAttribute("message", "Failed to delete the user " + userid);
+				request.getRequestDispatcher("/admin.jsp").forward(request, response);
+			} else {
+				request.removeAttribute("userid");
+				request.getRequestDispatcher("/admin.jsp").forward(request, response);
+			}}
 			break;
 			
 		case "save_donation":{
@@ -139,19 +181,33 @@ public class MainServlet extends HttpServlet {
 			forwardToEditDonors(request, response, 0);
 			break;
 		case "show_donor":{
-			int donorId = Integer.parseInt(request.getParameter("donor_id"));
+			String donor_id = request.getParameter("donor_id");
+			if (donor_id == null) donor_id = "0";
+			int donorId = Integer.parseInt(donor_id);
 			forwardToEditDonors(request, response, donorId);}
 			break;
 		case "delete_donor":{
 			int donorId = Integer.parseInt(request.getParameter("donor_id"));
 			Donor.remove(donorId);
 			request.getSession().setAttribute("donors", Donor.getDonors()); // refresh the list
-			forwardToEditDonors(request, response, 0);
-			break;}
+			forwardToEditDonors(request, response, 0);}
+			break;
 		case "logout":{
 			HttpSession session = request.getSession();
 			if (session != null) session.invalidate();
 			request.getRequestDispatcher("/login.jsp").forward(request, response);
+			}
+			break;
+		case "reports":{
+			request.getRequestDispatcher("/reports.jsp").forward(request, response);
+			}
+			break;
+		case "emails":{
+			request.getRequestDispatcher("/sendEmail.jsp").forward(request, response);
+			}
+			break;
+		case "admin": {
+			request.getRequestDispatcher("/admin.jsp").forward(request, response);
 			}
 		}
 	}
@@ -169,7 +225,7 @@ public class MainServlet extends HttpServlet {
 	}
 
 	/**
-	 * Successful login forwards to the edit donor screen.
+	 * Successful login adds the User object to the Session and forwards to the edit donor screen.
 	 * Failure returns to the login screen with a message.
 	 * 
 	 * @param request
@@ -180,8 +236,12 @@ public class MainServlet extends HttpServlet {
 	private void loginAction(HttpServletRequest request, HttpServletResponse response)throws IOException, ServletException {
 		String userid = request.getParameter("userid");
 		String password = request.getParameter("password");
-		if (login(userid, password)) {
+		boolean valid = User.isUserValid(userid, password);
+		if (valid) {
+			User user = User.get(userid);
+			// create a new session
 			HttpSession session = request.getSession(true);
+			session.setAttribute("activeUser", user);
 			session.setAttribute("donors", Donor.getDonors());
 			forwardToEditDonors(request, response, 0);
 		} else {
@@ -197,10 +257,5 @@ public class MainServlet extends HttpServlet {
 		doGet(request, response);
 	}
 	
-	private boolean login(String userid, String password) {
-		if (userid.equals("admin") && password.equals("admin")) return true;
-		return false;
-	}
-
 }
 

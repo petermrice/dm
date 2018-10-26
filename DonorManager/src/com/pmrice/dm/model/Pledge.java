@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,7 +121,7 @@ public class Pledge implements Serializable {
 		Pledge pledge = new Pledge(0, "", Util.today());
 		list.add(pledge);
 		Connection con = Util.getConnection();
-		String sql = "SELECT id, description, begin_date FROM dm.pledge WHERE donor_id = '" + donorId + "';";
+		String sql = "SELECT id, description, begin_date FROM pledge WHERE donor_id = '" + donorId + "';";
 		try {
 			ResultSet rs = con.createStatement().executeQuery(sql);
 			while (rs.next()) {
@@ -137,9 +138,9 @@ public class Pledge implements Serializable {
 	}
 	
 	public static Pledge get(int id)  {
+		Connection con = Util.getConnection();
 		try {
-			Connection con = Util.getConnection();
-			String sql = "SELECT * FROM dm.pledge WHERE id = '" + id + "';";
+			String sql = "SELECT * FROM pledge WHERE id = '" + id + "';";
 			ResultSet rs = con.createStatement().executeQuery(sql);
 			if (!rs.next()) return null;
 			Pledge pledge = new Pledge(
@@ -160,28 +161,34 @@ public class Pledge implements Serializable {
 	}
 	
 	public static boolean remove(int id) {
+		Connection con = Util.getConnection();
 		try {
-			Connection con = Util.getConnection();
-			String sql = "DELETE FROM dm.pledge WHERE id = '" + id + "';";
+			String sql = "DELETE FROM pledge WHERE id = '" + id + "';";
 			con.createStatement().execute(sql);
 			return true;
 		} catch (Exception e) {
 			System.out.println("Error removing pledge: e");
+			try {
+				con.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 			return false;
 		}
 	}
 	
 	public static boolean update(Pledge pledge) {
+		Connection con = Util.getConnection();
 		try {
-			Connection con = Util.getConnection();
-			StringBuilder b = new StringBuilder("UPDATE dm.pledge ")
+			StringBuilder b = new StringBuilder("UPDATE pledge ")
 				.append("SET donor_id = ").append(pledge.getDonorId()).append(",")
 				.append(" description = '").append(pledge.getDescription()).append("',")
 				.append(" amount = '").append(Currency.store(pledge.getAmount())).append("',")
 				.append(" begin_date = '").append(Util.displayToStorage(pledge.getBeginDate())).append("',")
 				.append(" end_date = '").append(Util.displayToStorage(pledge.getEndDate())).append("',")
 				.append(" fulfilled = ").append(pledge.isFulfilled()  ? 1 : 0).append(",")
-				.append(" cancelled = ").append(pledge.isCancelled()  ? 1 : 0).append(" ")
+				.append(" cancelled = ").append(pledge.isCancelled()  ? 1 : 0).append(",")
+				.append(" note = '").append(pledge.getNote()).append("' ")
 				.append("WHERE id = ").append(pledge.getId()).append(";");
 			String sql = b.toString();
 			con.createStatement().execute(sql);
@@ -193,9 +200,16 @@ public class Pledge implements Serializable {
 	}
 	
 	public static Pledge add(Pledge pledge) {
+		Connection con = Util.getConnection();
 		try {
-			Connection con = Util.getConnection();
-			StringBuilder b = new StringBuilder("INSERT INTO dm.pledge (id, donor_id, description, amount, begin_date, end_date, fulfilled, cancelled, note) VALUES(")
+			Statement stmnt = con.createStatement();
+			int newid = 0;
+			ResultSet rs = stmnt.executeQuery("SELECT value FROM pledgekey WHERE id = 1");
+			if (rs.next()) newid = rs.getInt(1);
+			stmnt.executeUpdate("UPDATE pledgekey SET value = " + (newid + 1) + " WHERE id = 1;");
+			pledge.setId(newid);
+			
+			StringBuilder b = new StringBuilder("INSERT INTO pledge (id, donor_id, description, amount, begin_date, end_date, fulfilled, cancelled, note) VALUES(")
 				.append(pledge.getId()).append(",")
 				.append("").append(pledge.getDonorId()).append(",")
 				.append("'").append(pledge.getDescription()).append("',")
@@ -206,13 +220,10 @@ public class Pledge implements Serializable {
 				.append("").append(pledge.isCancelled() ? 1 : 0).append(",")
 				.append("'").append(pledge.getNote()).append("');");
 			String sql = b.toString();
-			con.createStatement().execute(sql);
-			ResultSet rs = con.createStatement().executeQuery("SELECT LAST_INSERT_ID()");
-			if (!rs.next()) return null;
-			pledge.setId(rs.getInt(1));
+			stmnt.execute(sql);
 			return pledge;
 		} catch (Exception e) {
-			System.out.println("Error adding pledge: e");
+			System.out.println("Error adding pledge: " + e);
 			return null;
 		}
 	}

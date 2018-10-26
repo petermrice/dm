@@ -3,6 +3,8 @@ package com.pmrice.dm.model;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -144,9 +146,9 @@ public class Donor implements Serializable {
 	}
 	
 	public static Donor get(int id) {
+		Connection con = Util.getConnection();
 		try {
-			Connection con = Util.getConnection();
-			String sql = "SELECT * FROM dm.donor WHERE id = '" + id + "';";
+			String sql = "SELECT * FROM donor WHERE id = '" + id + "';";
 			ResultSet rs = con.createStatement().executeQuery(sql);
 			if (!rs.next()) return null; // no value returned
 			Donor donor = new Donor(
@@ -171,9 +173,9 @@ public class Donor implements Serializable {
 	}
 	
 	public static boolean remove(int id) {
+		Connection con = Util.getConnection();
 		try {
-			Connection con = Util.getConnection();
-			String sql = "DELETE FROM dm.donor WHERE id = '" + id + "';";
+			String sql = "DELETE FROM donor WHERE id = '" + id + "';";
 			con.createStatement().execute(sql);
 			return true;
 		} catch (Exception e) {
@@ -183,9 +185,9 @@ public class Donor implements Serializable {
 	}
 	
 	public static boolean update(Donor donor) {
+		Connection con = Util.getConnection();
 		try {
-			Connection con = Util.getConnection();
-			StringBuilder b = new StringBuilder("UPDATE dm.donor SET ")
+			StringBuilder b = new StringBuilder("UPDATE donor SET ")
 				.append(" name = '").append(donor.getName()).append("',")
 				.append(" lastname = '").append(donor.getLastname()).append("',")
 				.append(" address1 = '").append(donor.getAddress1()).append("',")
@@ -200,7 +202,8 @@ public class Donor implements Serializable {
 				.append(" hidden = ").append(donor.isHidden() ? 1 : 0)
 				.append(" WHERE id = ").append(donor.getId()).append(";");
 			String sql = b.toString();
-			return con.createStatement().execute(sql);
+			boolean result = con.createStatement().execute(sql);
+			return result;
 		} catch (Exception e) {
 			System.out.println("Error getting a Donor.");
 			return false;
@@ -208,10 +211,17 @@ public class Donor implements Serializable {
 	}
 	
 	public static Donor add(Donor donor) {
+		Connection con = Util.getConnection();
 		try {
-			Connection con = Util.getConnection();
-			StringBuilder b = new StringBuilder("INSERT INTO dm.donor (id, name, lastname, address1, address2, city, state, zip, country, telephone, email, notes, hidden) VALUES(")
-				.append(donor.getId()).append(",")
+			Statement stmnt = con.createStatement();
+			int newid = 0;
+			ResultSet rs = stmnt.executeQuery("SELECT value FROM donorkey WHERE id = 1");
+			if (rs.next()) newid = rs.getInt(1);
+			stmnt.executeUpdate("UPDATE donorkey SET value = " + (newid + 1) + " WHERE id = 1;");
+			donor.setId(newid);
+			
+			StringBuilder b = new StringBuilder("INSERT INTO donor (id, name, lastname, address1, address2, city, state, zip, country, telephone, email, notes, hidden) VALUES(")
+				.append(newid).append(",")
 				.append("'").append(donor.getName()).append("',")
 				.append("'").append(donor.getLastname()).append("',")
 				.append("'").append(donor.getAddress1()).append("',")
@@ -225,9 +235,8 @@ public class Donor implements Serializable {
 				.append("'").append(donor.getNotes()).append("',")
 				.append(donor.isHidden()).append(");");	
 			String sql = b.toString();
-			con.createStatement().execute(sql);
-			ResultSet rs = con.createStatement().executeQuery("SELECT LAST_INSERT_ID()");
-			if (rs.next()) donor.setId(rs.getInt(1));
+			stmnt = con.createStatement();
+			stmnt.execute(sql);
 			return donor;
 		} catch (Exception e) {
 			System.out.println("Error getting a Donor.");
@@ -241,9 +250,9 @@ public class Donor implements Serializable {
 	 * @return
 	 */
 	public static List<Donor> getDonors(){
+		Connection con = Util.getConnection();
 		try {
-			Connection con = Util.getConnection();
-			String sql = "SELECT * FROM dm.donor WHERE hidden = 0 ORDER BY lastname;";
+			String sql = "SELECT * FROM donor WHERE hidden = 0 ORDER BY lastname;";
 			ResultSet rs = con.createStatement().executeQuery(sql);
 			List<Donor> donors = new ArrayList<Donor>();
 			Donor donor = new Donor();

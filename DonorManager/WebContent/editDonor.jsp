@@ -2,7 +2,8 @@
     pageEncoding="UTF-8" import="com.pmrice.dm.model.*, com.pmrice.dm.util.*, java.util.*"%>
 <!DOCTYPE html>
 <%  
-	List<Donor> donors = Donor.getDonors();
+	boolean userIsAdmin = ((User)request.getSession().getAttribute("activeUser")).isAdmin();
+	List<Donor> donors = (List<Donor>)request.getSession().getAttribute("donors");
 	int donorId = (int)request.getAttribute("donor_id"); 
 	Donor donor = donors.get(0);
 	if (donorId > 0) donor = Donor.get(donorId);
@@ -17,8 +18,8 @@
 			return false;
 		}
 	}
-
 	</script>
+	
 	<style>
 	
 		ul.list {
@@ -35,7 +36,7 @@
 			list-style-type: none;
 			margin: 0;
 			padding: 0;}
-	
+		
 		.textinput {
 			width:300px;
 		}
@@ -55,14 +56,54 @@
 			height:500px;
 			border-style:none;
 			margin:5px;
-			title="View, Edit or Create a Donor";}
+			}
 							
 	</style>
+	<style>
+		ul.topmenu {
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+			background-color: #333;
+			}
+		li.topmenu_item {
+		float: left;
+			}
+		li.topmenu_item a {
+			display: block;
+			color: white;
+			text-align: center;
+			padding: 14px 16px;
+			text-decoration: none;
+			}
+		li a:hover {
+			background-color: $111;
+			}
+	</style>
+	
 <meta charset="UTF-8">
 <title>Donor Manager - Donor</title>
 </head>
 <body>
-	<ul><li><a href="sendEmail.jsp">Send Email</a></ul>
+	<ul class="topmenu">
+		<li class="topmenu_item">	
+			<a href="main?action=show_donor">Donors</a>		
+		</li>
+		<li class="topmenu_item">
+			<a href="main?action=emails">Emails</a>
+		</li>
+		<li class="topmenu_item">
+			<a href="main?action=reports">Reports</a>
+		</li>
+		<li class="topmenu_item">
+			<a href="main?action=logout">Logout</a>
+		</li>
+		<li class="topmenu_item" <%=userIsAdmin ? "" : "hidden" %>>
+			<a href="main?action=admin">Admin</a>
+		</li>
+	</ul>
+
 	<h2>View and Edit Donor Information</h2>
 
 <div id="donorBlock" >
@@ -81,7 +122,7 @@
 			<tr><td>Country</td><td><input type="text" class="textinput" name="country" value="<%=donor.getCountry()%>"></td></tr>
 			<tr><td>Telephone</td><td><input type="tel" placeholder="000-000-0000" class="textinput" name="telephone" value="<%=donor.getTelephone()%>"></td></tr>
 			<tr><td>EMail</td><td><input type="email" class="textinput" name="email" value="<%=donor.getEmail()%>"></td></tr>
-			<tr><td>Notes</td><td><textarea rows="3" cols="30" name="notes"> <%=donor.getNotes()%></textarea></td></tr>
+			<tr><td>Notes</td><td><textarea rows="3" cols="40" name="notes"><%=donor.getNotes()%></textarea></td></tr>
 			<tr><td><input type="hidden" name="donor_id" value="<%=donor.getId()%>">
 					<input type="hidden" name="action" value="save_donor">
 					<input id="donorSave" type="submit" value="SAVE"></td></tr>
@@ -102,13 +143,6 @@
 		</ul>
 		<br>
 		<ul class="menu">
-		<li>
-			<form action="main" method="post" onSubmit="return warnOnDeletion()">
-	 		<input type="submit" value="Delete this Donor" class="menubutton" onmouseover="this.style=\"color:red\"">
-	 		<input type="hidden" name="donor_id" value="<%=donor.getId()%>">
-	 		<input type="hidden" name="action" value="delete_donor">
-			</form>
-		</li>
 		<li><form action="main" method="post">
 	 		<input type="submit" value="Donations for this Donor" class="menubutton">
 	 		<input type="hidden" name="action" value="show_donation">
@@ -116,12 +150,7 @@
 	 		<input type="hidden" name="donation_id" value="0">
 			</form>
 		</li>
-		<li>
-			<form action="main" method="post">
-	 		<input type="submit" value="Logout" id="logout" class="menubutton">
-	 		<input type="hidden" name="action" value="logout">
-			</form>
-		</li>
+
 		</ul>
 	</td>
 </tr></table>	

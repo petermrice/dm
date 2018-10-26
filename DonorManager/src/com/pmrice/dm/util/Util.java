@@ -1,13 +1,13 @@
 package com.pmrice.dm.util;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class Util {
+import com.pmrice.dm.servlet.MainServlet;
 
+public class Util {
 	
 	public static String today() {
 		java.sql.Date date = new java.sql.Date(GregorianCalendar.getInstance().getTimeInMillis());
@@ -16,26 +16,23 @@ public class Util {
 		String[] parts = dt.split("/");
 		return parts[0] + "/" + parts[1] + "/20" + parts[2];
 	}
+	
+	public static int year() {
+		Calendar calendar = GregorianCalendar.getInstance();
+		return calendar.get(Calendar.YEAR);
+	}
 			
 	public static Connection getConnection() {
 		try {
-			new com.mysql.jdbc.Driver();
-			return DriverManager.getConnection("jdbc:mysql://localhost/dm");
-		} catch (SQLException e) {
+			Connection connection = (Connection)MainServlet.INSTANCE.getServletContext().getAttribute("connection");
+			connection.setAutoCommit(true);
+			return connection;
+		} catch (Exception e) {
 			System.out.println(e.toString());
 			return null;
 		}
 	}
-	
-	public static void createDatabase() throws SQLException {
-		getConnection().createStatement().execute("DROP DATABASE IF EXISTS dm;");
-		getConnection().createStatement().execute("CREATE DATABASE dm DEFAULT CHARACTER SET utf8;");
-	}
-	
-	public static void dropDatabase() throws SQLException {
-		getConnection().createStatement().execute("DROP DATABASE IF EXISTS dm;");
-	}
-	
+			
 	/**
 	 * Change a date string 'mm/dd/yyyy' to 'yyy-mm-dd' for storage.
 	 * 
@@ -74,4 +71,62 @@ public class Util {
 		}
 		return true;
 	}
+	
+	private static String[] monthname = new String[] {"January","February","March","April","May","June","July","August","September","October","November","December"};
+	
+	/**
+	 * Return the month name and year from a date string in the form mm/dd/yyyy
+	 * @param month name
+	 * @return
+	 */
+	public static String getMonthName(String mm) {
+		return monthname[Integer.parseInt(mm) - 1];
+	}
+	
+	/**
+	 * Assume date has the form mm/dd/yyyy
+	 * @param date
+	 * @return
+	 */
+	public static String getMonthBegin(String date) {
+		String mm = date.substring(0, date.indexOf('/'));
+		String yyyy = date.substring(date.lastIndexOf('/') + 1);
+		return mm + "/01/" + yyyy; 
+	}
+	
+	/**
+	 * Assume date has the form mm/dd/yyyy
+	 * @param date
+	 * @return
+	 */
+	public static String getMonthEnd(String date) {
+		String mm = date.substring(0, date.indexOf('/'));
+		String yyyy = date.substring(date.lastIndexOf('/') + 1);
+		String dd = "";
+		switch (mm) {
+		case "01":
+		case "03":
+		case "05":
+		case "07":
+		case "08":
+		case "10":
+		case "12":
+			dd = "31";
+			break;
+		case "04":
+		case "06":
+		case "09":
+		case "11":
+			dd = "30";
+			break;
+		case "02":
+			if (Integer.parseInt(yyyy) % 4 == 0) dd = "29";
+			else dd = "28";
+			break;
+		default:
+			dd = "error";
+		}
+		return mm + "/" + dd + "/" + yyyy;
+	}
+	
 }

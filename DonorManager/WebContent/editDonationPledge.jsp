@@ -2,6 +2,7 @@
     pageEncoding="UTF-8" import="com.pmrice.dm.model.*, com.pmrice.dm.util.*, java.util.*"%>
 <!DOCTYPE html>
 <%  
+	boolean userIsAdmin = ((User)request.getSession().getAttribute("activeUser")).isAdmin();
 	int donorId = (int)request.getAttribute("donor_id"); 
 	List<Donation> donations = Donation.getForDonor(donorId);
 	int donationId = (int)request.getAttribute("donation_id");
@@ -33,14 +34,31 @@
 			return false;
 		}
 	}
-	
-	function warnOnDeletion() {
-		alert("This action will delete the data from the system.\nUse with care!")
-	}
 
 	</script>
 	<style>
-	
+		ul.topmenu {
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+			background-color: #333;
+			}
+		li.topmenu_item {
+		float: left;
+			}
+		li.topmenu_item a {
+			display: block;
+			color: white;
+			text-align: center;
+			padding: 14px 16px;
+			text-decoration: none;
+			}
+		li a:hover {
+			background-color: $111;
+			}
+	</style>
+	<style>
 		ul.list {
 			overflow:hidden; 
 			overflow-y:scroll;
@@ -77,6 +95,11 @@
 			margin:5px;
 			}
 		
+		#pledgeSave {
+			border:line;
+			color:Tomato;
+			font-size: 20px;}
+																
 		#pledgeBlock {
 			width:400px;
 			height:500px;
@@ -88,6 +111,24 @@
 <title>Donor Manager - Donations and Pledges</title>
 </head>
 <body>
+	<ul class="topmenu">
+		<li class="topmenu_item">	
+			<a href="main?action=show_donor">Donors</a>		
+		</li>
+		<li class="topmenu_item">
+			<a href="main?action=emails">Emails</a>
+		</li>
+		<li class="topmenu_item">
+			<a href="main?action=reports">Reports</a>
+		</li>
+		<li class="topmenu_item">
+			<a href="main?action=logout">Logout</a>
+		</li>
+		<li class="topmenu_item" <%=userIsAdmin ? "" : "hidden" %>>
+			<a href="main?action=admin">Admin</a>
+		</li>
+	</ul>
+
 
 <table><tr><td>
 <div id="donationBlock">
@@ -109,16 +150,10 @@
 	<ul class="menu">
 	<li>
 	<form action="main" method="post" >
- 		<input type="submit" value="Delete this Donation" id="donationDelete" class="menubutton" onmouseover="warnOnDeletion()"/>
+ 		<input type="submit" value="Delete this Donation" id="donationDelete" class="menubutton" onmouseover="this.style.color='red'" onmouseout="this.style.color='blue'"/>
  		<input type="hidden" name="donor_id" value="<%=Integer.toString(donorId)%>"/>
  		<input type="hidden" name="donation_id" value="<%=Integer.toString(donationId)%>"/>
  		<input type="hidden" name="action" value="delete_donation"/>
-	</form>
-	</li>
-	<li>
-	<form action="main" method="post">
- 		<input type="submit" value="Logout" id="logout" class="menubutton">
- 		<input type="hidden" name="action" value="logout">
 	</form>
 	</li>
 	</ul>
@@ -147,11 +182,11 @@
 			<tr><td>Description</td><td><input type="text" class="textinput" name="description" value="<%=pledge.getDescription()%>"/></td></tr>
 			<tr><td>Amount</td><td><input type="text" class="textinput" name="amount" value="<%=pledge.getAmount()%>"/></td></tr>
 			<tr><td>Begin Date</td><td><input type="text" class="textinput" name="begin_date" value="<%=pledge.getBeginDate()%>"/></td></tr>
-			<tr><td>End Date</td><td><input type="text" class="textinput" name="end_date" value="<%=pledge.getBeginDate()%>"/></td></tr>
+			<tr><td>End Date</td><td><input type="text" class="textinput" name="end_date" value="<%=pledge.getEndDate()%>"/></td></tr>
 			<tr><td>Fulfilled</td><td><input type="checkbox" name="fulfilled" value="Fulfilled" <%= pledge.isFulfilled() ? "checked" : "" %>/></td></tr>
 			<tr><td>Cancelled</td><td><input type="checkbox" name="cancelled" value="Cancelled" <%= pledge.isCancelled() ? "checked" : "" %>/></td></tr>
-			<tr><td>Note</td><td><textarea rows="3" cols="40" name="note"> <%=pledge.getNote()%></textarea></td></tr>
-			<tr><td><input id="donationSave" type="submit" value="SAVE"/></td><td>
+			<tr><td>Note</td><td><textarea rows="3" cols="40" name="note"><%=pledge.getNote()%></textarea></td></tr>
+			<tr><td><input id="pledgeSave" type="submit" value="SAVE"/></td><td>
 				<input type="hidden" name="donor_id" value="<%=Integer.toString(donorId)%>"/>
 				<input type="hidden" name="pledge_id" value="<%=pledge.getId()%>"/>
 					<input type="hidden" name="action" value="save_pledge"/></td></tr>
@@ -160,16 +195,10 @@
 	<ul class="menu">
 		<li>
 			<form action="main" method="post">
-	 		<input type="submit" value="Delete this Pledge" id="pledgeDelete" class="menubutton"/>
+	 		<input type="submit" value="Delete this Pledge" id="pledgeDelete" class="menubutton" onmouseover="this.style.color='red'" onmouseout="this.style.color='blue'"/>
 	 		<input type="hidden" name="donor_id" value="<%=Integer.toString(donorId)%>"/>
 	 		<input type="hidden" name="pledge_id" value="<%=Integer.toString(pledgeId)%>"/>
 	 		<input type="hidden" name="action" value="delete_pledge"/>
-			</form>
-		</li>
-		<li>
-			<form action="main" method="post">
-	 		<input type="submit" value="Logout" id="logout" class="menubutton">
-	 		<input type="hidden" name="action" value="logout">
 			</form>
 		</li>
 	</ul>

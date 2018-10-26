@@ -1,12 +1,10 @@
 package com.pmrice.dm.util;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Properties;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
-import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
@@ -16,69 +14,77 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import com.pmrice.dm.model.MailConfig;
+
 public class SendEmail {
 	
 	public static String host;
 	public static String sslTrust;
 	public static String userid;
 	public static String password;
-	
 
 	public static String send(String to, String from, String bcc, String subject, String messageText) {
-		String host = "localhost";
-		Properties properties = System.getProperties();
-		properties.setProperty("mail.smtp.host", host);
-		Session session = Session.getDefaultInstance(properties);
+
 		try {
-			MimeMessage message = new MimeMessage(session);
+			MailConfig config = MailConfig.get();
+			Properties prop = new Properties();
+			prop.setProperty("mail.smtp.auth", "true");
+			prop.setProperty("mail.smtp.starttls.enable", "true");
+			prop.setProperty("mail.smtp.host", config.getUrl());
+			prop.setProperty("mail.smtp.port", Integer.toString(config.getPort()));
+			
+			Session session = Session.getInstance(prop, new Authenticator() {
+				@Override
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(config.getUserid(), config.getPassword());
+				}
+			});
+
+			Message message = new MimeMessage(session);
 			message.setFrom(new InternetAddress(from));
-			message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-			if (bcc != null && bcc.length() > 0)
-				message.addRecipient(Message.RecipientType.BCC, new InternetAddress(bcc));
+			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+			if (bcc != null && bcc.length() > 0) message.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bcc));
 			message.setSubject(subject);
-			message.setText(messageText);
-			Transport.send(message);
-			return null;
-		} catch (MessagingException mex) {
-			return mex.toString();
+
+			MimeBodyPart mimeBodyPart = new MimeBodyPart();
+			mimeBodyPart.setContent(messageText, "text/html");
+
+			Multipart multipart = new MimeMultipart();
+			multipart.addBodyPart(mimeBodyPart);
+			
+			/* To add an attachment:
+			 * 
+			 * MimeBodyPart attachmentBodyPart = new MimeBodyPart();
+			 * attachmentBodyPart.attachFile(new File("path/to/file"));
+			 * multipart.addBodyPart(attachmentBodyPart);
+			 * 
+			 */
+
+			message.setContent(multipart);
+			
+			Transport transport = session.getTransport();
+			
+	        // Send the message.
+	        try {
+	            System.out.println("Sending...");
+	            
+	            String host = config.getUrl();
+	            String userid = config.getUserid();
+	            String password = config.getPassword();
+	            
+	            transport.connect(host, userid, password);
+	        	
+	            transport.sendMessage(message, message.getAllRecipients());
+	            return null; //success
+	        } catch (Exception ex) {
+	            return ex.getMessage();
+	        } finally {
+	            // Close and terminate the connection.
+	            transport.close();
+	        }		
+
+		} catch (Exception e) {
+			return "Error: " + e;
 		}
-	}
-
-	public static void send2(String to, String from, String bcc, String subject, String messageText) throws Exception {
-
-		Properties prop = new Properties();
-		File propfile = new File("mailhost.properties");
-		prop.load(new FileInputStream(propfile));
-
-		Session session = Session.getInstance(prop, new Authenticator() {
-			@Override
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(prop.getProperty("userid"), prop.getProperty("password"));
-			}
-		});
-
-		Message message = new MimeMessage(session);
-		message.setFrom(new InternetAddress(from));
-		message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-		if (bcc != null && bcc.length() > 0) message.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bcc));
-		message.setSubject(subject);
-
-		MimeBodyPart mimeBodyPart = new MimeBodyPart();
-		mimeBodyPart.setContent(messageText, "text/html");
-
-		Multipart multipart = new MimeMultipart();
-		multipart.addBodyPart(mimeBodyPart);
-		
-		/* To add an attachment:
-		 * 
-		 * MimeBodyPart attachmentBodyPart = new MimeBodyPart();
-		 * attachmentBodyPart.attachFile(new File("path/to/file"));
-		 * multipart.addBodyPart(attachmentBodyPart);
-		 * 
-		 */
-
-		message.setContent(multipart);
-
-		Transport.send(message);
 	}
 }

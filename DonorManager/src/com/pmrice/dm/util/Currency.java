@@ -1,12 +1,11 @@
 package com.pmrice.dm.util;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * Currency is stored as a string, no commas, no currency symbol. The value is a whole
- * number equal to the dollar value X 100.
- * The max value allowed is 999,999,999.99.
+ * Currency is stored as a string, no commas, no decimal point, no currency symbol. The value is a whole
+ * number equal to the dollar value X 100, i.e. cents.
+ * The max value allowed is 99999999999 ($999,999,999.99).
 	   
  * @author peterrice
  *
@@ -16,15 +15,15 @@ public class Currency {
 	private String store;
 	
 	public Currency() {
-		store = "0.00";
+		store = "000";
 	}
 	
 	public Currency(String store) {
 		this.store = store;
 	}
 	
-	public Currency(BigDecimal bd) {
-		store = normalize(bd).toString();;
+	public Currency(long bd) {
+		store = Long.toString(bd);;
 	}
 	
 	public String getStore() {
@@ -40,8 +39,8 @@ public class Currency {
 	}
 	
 	public Currency add(Currency addend) {
-		BigDecimal ad = new BigDecimal(addend.store);
-		return new Currency(new BigDecimal(store).multiply(ad));
+		Long ad = Long.parseLong(addend.store);
+		return new Currency(Long.parseLong(store) + ad);
 	}
 	
 	/**
@@ -52,20 +51,10 @@ public class Currency {
 	 */
 	public Currency total(List<Currency> list) {
 		if (list.size() == 0) return new Currency();
-		BigDecimal sum = new BigDecimal(list.get(0).store);
+		long sum = Long.parseLong(list.get(0).store);
 		for (int i = 1; i < list.size(); i++)
-			sum = sum.add(new BigDecimal(list.get(i).store));
+			sum = sum + Long.parseLong(list.get(i).store);
 		return new Currency(sum);
-	}
-	
-	/*
-	 * remove all fraction digits after the second.
-	 */
-	private BigDecimal normalize(BigDecimal in) {
-		BigDecimal hundred = new BigDecimal(100);
-		BigDecimal hundredth = new BigDecimal(0.01);
-		BigDecimal b = in.divideToIntegralValue(hundredth);
-		return b.divide(hundred);
 	}
 	
 	@Override
@@ -121,12 +110,12 @@ public class Currency {
 			millions = thousands.substring(0, thousands.length() - 3);
 			thousands = thousands.substring(thousands.length() - 3, thousands.length());
 		}
-		if (thousands.length() == 0) return (b ? "$" : "") + dollars + "." + cents;
+		if (thousands.length() == 0 && millions.length() == 0) return (b ? "$" : "") + dollars + "." + cents;
 		if (millions.length() == 0) return (b ? "$" : "") + thousands + "," + dollars + "." + cents;
 		return (b ? "$" : "") + millions + "," + thousands + "," + dollars + "." + cents;
 	}
 	
-	public static String store (String display) {
+	public static String store(String display) {
 		// remove commas, spaces, etc. (not periods)
 		String dollars = "";
 		String cents = "";
@@ -151,34 +140,6 @@ public class Currency {
 		if (cents.length() == 1) cents = cents + "0";
 		else cents = cents.substring(0,2);
 		return dollars + cents;
-	}
-	
-	public static void main(String[] args) {
-		System.out.println(store("$56.99"));
-		System.out.println(store("4,000.8"));
-		System.out.println(store("4,56,8.00"));
-		System.out.println(store("355"));
-		System.out.println(store("355."));
-		System.out.println(store("$ 65,778.03"));
-		System.out.println(getDisplay("55612345678", true));
-		System.out.println(getDisplay("5612345678", true));
-		System.out.println(getDisplay("512345678", true));
-		System.out.println(getDisplay("12345678", true));
-		System.out.println(getDisplay("2345678", true));
-		System.out.println(getDisplay("345678", true));
-		System.out.println(getDisplay("45678", true));
-		System.out.println(getDisplay("5678", true));
-		System.out.println(getDisplay("678", true));
-		System.out.println(getDisplay("78", true));
-		System.out.println(getDisplay("8", true));
-		System.out.println(getDisplay("55435699",false));
-		BigDecimal bd = new BigDecimal(45.678);
-		System.out.println(validate("$56,988.01"));
-		System.out.println(new Currency(bd).toString());
-		System.out.println(validate("$56.78"));
-		System.out.println(validate("56.8"));
-		System.out.println(validate("$5,6.78"));
-		
 	}
 
 }

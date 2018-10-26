@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <%
+	String to = (String)request.getAttribute("to");
 	String from = request.getParameter("from");
 	String bcc = request.getParameter("bcc");
 	String subject = request.getParameter("subject");
@@ -10,12 +11,12 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Donation Manager - Email Sent</title>
 </head>
 <body>
 <h1>Success!</h1>
 This email was sent:
-To: <%= %>
+To: <%=to %>
 From: <%=from %>
 BCC: <%=bcc %>
 Subject: <%=subject %>
