@@ -47,8 +47,8 @@
 		<li class="topmenu_item">
 			<a href="main?action=logout">Logout</a>
 		</li>
-		<li class="topmenu_item">
-			<a href="main?action=admin" <%=userIsAdmin ? "" : "hidden" %>>Admin</a>
+		<li class="topmenu_item"<%=userIsAdmin ? "" : "hidden" %>>
+			<a href="main?action=admin" >Admin</a>
 		</li>
 	</ul>
 

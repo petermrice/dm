@@ -28,6 +28,10 @@
 		li a:hover {
 			background-color: $111;
 			}
+		#emailSend {
+			border:line;
+			color:Tomato;
+			font-size: 20px;}
 	</style>
 
 
@@ -66,7 +70,7 @@
 		<tr><td>Subject:</td><td><input type="text" name="subject" required></td></tr>
 		<tr><td>Message:</td><td><textarea rows="20" cols="80" name="message_text"></textarea></td></tr>
 		<tr><td><input type="hidden" name="action" value="to_individual">
-		<tr><td><input type="submit" value="Send"></td></tr>
+		<tr><td><input id="emailSend" type="submit" value="SEND"></td></tr>
 	</table>
 </form>
 </body>

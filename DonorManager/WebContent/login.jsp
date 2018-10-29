@@ -7,7 +7,7 @@
 </head>
 <body>
 	<h2>Please log in:</h2>
-	<form action="MainServlet" method="post" >
+	<form action="main" method="post" >
 		<input type="hidden" name="action" value="login"/>
 		<table>
 			<tr>

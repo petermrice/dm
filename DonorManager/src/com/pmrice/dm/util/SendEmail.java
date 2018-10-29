@@ -1,6 +1,5 @@
 package com.pmrice.dm.util;
 
-import java.io.InputStream;
 import java.util.Properties;
 
 import javax.mail.Authenticator;
