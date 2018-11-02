@@ -2,6 +2,10 @@
     pageEncoding="UTF-8" import="java.util.*, com.pmrice.dm.model.*"%>
 <%  
 	List<Donor> donors = Donor.getDonors();
+	if (session == null || session.getAttribute("activeUser") == null){
+		request.setAttribute("message", "Your session has expired. Please log in again.");
+		request.getRequestDispatcher("/login.jsp").forward(request, response);
+	}
 	boolean userIsAdmin = ((User)request.getSession().getAttribute("activeUser")).isAdmin();
 %>
 <!DOCTYPE html>

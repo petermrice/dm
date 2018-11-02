@@ -2,7 +2,11 @@
     pageEncoding="UTF-8" import="com.pmrice.dm.model.*, com.pmrice.dm.util.*, java.util.*"%>
 <!DOCTYPE html>
 <%  
-	boolean userIsAdmin = ((User)request.getSession().getAttribute("activeUser")).isAdmin();
+	if (session == null || session.getAttribute("activeUser") == null){
+		request.setAttribute("message", "Your session has expired. Please log in again.");
+		request.getRequestDispatcher("/login.jsp").forward(request, response);
+	}
+	boolean userIsAdmin = ((User)session.getAttribute("activeUser")).isAdmin();
 	int donorId = (int)request.getAttribute("donor_id"); 
 	List<Donation> donations = Donation.getForDonor(donorId);
 	int donationId = (int)request.getAttribute("donation_id");
@@ -45,7 +49,7 @@
 			background-color: #333;
 			}
 		li.topmenu_item {
-		float: left;
+			float: left;
 			}
 		li.topmenu_item a {
 			display: block;
@@ -183,8 +187,8 @@
 			<tr><td>Amount</td><td><input type="text" class="textinput" name="amount" value="<%=pledge.getAmount()%>"/></td></tr>
 			<tr><td>Begin Date</td><td><input type="text" class="textinput" name="begin_date" value="<%=pledge.getBeginDate()%>"/></td></tr>
 			<tr><td>End Date</td><td><input type="text" class="textinput" name="end_date" value="<%=pledge.getEndDate()%>"/></td></tr>
-			<tr><td>Fulfilled</td><td><input type="checkbox" name="fulfilled" value="Fulfilled" <%= pledge.isFulfilled() ? "checked" : "" %>/></td></tr>
-			<tr><td>Cancelled</td><td><input type="checkbox" name="cancelled" value="Cancelled" <%= pledge.isCancelled() ? "checked" : "" %>/></td></tr>
+			<tr><td>Fulfilled</td><td><input type="checkbox" name="fulfilled" value="checked" <%= pledge.isFulfilled() ? "checked" : "" %>/></td></tr>
+			<tr><td>Cancelled</td><td><input type="checkbox" name="cancelled" value="checked" <%= pledge.isCancelled() ? "checked" : "" %>/></td></tr>
 			<tr><td>Note</td><td><textarea rows="3" cols="40" name="note"><%=pledge.getNote()%></textarea></td></tr>
 			<tr><td><input id="pledgeSave" type="submit" value="SAVE"/></td><td>
 				<input type="hidden" name="donor_id" value="<%=Integer.toString(donorId)%>"/>

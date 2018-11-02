@@ -3,7 +3,6 @@ package com.pmrice.dm.servlet;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,12 +13,6 @@ import com.pmrice.dm.util.SendEmail;
 /**
  * Servlet implementation class MailServlet. Handles mail unit
  */
-@WebServlet(
-		description = "Sends emails to donors", 
-		urlPatterns = { 
-				"/MailServlet", 
-				"/mail"
-		})
 public class MailServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        

@@ -166,7 +166,7 @@ public class Donor implements Serializable {
 					rs.getBoolean("hidden"));
 			return donor;
 		} catch (Exception e) {
-			System.out.println("Error getting a Donor.");
+			System.out.println("Error getting Donor with id = '" + id + "'.");
 			return null;
 		}
 	}
@@ -178,8 +178,48 @@ public class Donor implements Serializable {
 			con.createStatement().execute(sql);
 			return true;
 		} catch (Exception e) {
-			System.out.println("Error getting a Donor.");
+			System.out.println("Error removing Donor with id = '" + id + "'.");
 			return false;
+		}
+	}
+	
+	public static void removeHidden() {
+		Connection con = Util.getConnection();
+		try {
+			String sql = "DELETE FROM donor WHERE hidden = 1;";
+			con.createStatement().execute(sql);
+		} catch (Exception e) {
+			System.out.println("Error removing hidden Donors.");
+		}
+	}
+	
+	public static List<Donor> getHiddenDonors() {
+		Connection con = Util.getConnection();
+		try {
+			String sql = "SELECT * FROM donor WHERE hidden = 1 ORDER BY lastname;";
+			ResultSet rs = con.createStatement().executeQuery(sql);
+			List<Donor> donors = new ArrayList<Donor>();
+			while (rs.next()) {
+					Donor donor = new Donor(
+					rs.getInt("id"),
+					rs.getString("name"), 
+					rs.getString("lastname"), 
+					rs.getString("address1"), 
+					rs.getString("address2"), 
+					rs.getString("city"), 
+					rs.getString("state"), 
+					rs.getString("zip"), 
+					rs.getString("country"),
+					rs.getString("telephone"), 
+					rs.getString("email"), 
+					rs.getString("notes"), 
+					rs.getBoolean("hidden"));
+					donors.add(donor);
+			}
+			return donors;
+		} catch (Exception e) {
+			System.out.println("Error getting Donors.");
+			return null;
 		}
 	}
 	
@@ -204,7 +244,7 @@ public class Donor implements Serializable {
 			boolean result = con.createStatement().execute(sql);
 			return result;
 		} catch (Exception e) {
-			System.out.println("Error getting a Donor.");
+			System.out.println("Error updating Donor with id = '" + donor.id + "'.");
 			return false;
 		}
 	}
@@ -238,7 +278,7 @@ public class Donor implements Serializable {
 			stmnt.execute(sql);
 			return donor;
 		} catch (Exception e) {
-			System.out.println("Error getting a Donor.");
+			System.out.println("Error adding Donor " + donor.toString() + ".");
 			return null;
 		}
 	}
@@ -276,7 +316,7 @@ public class Donor implements Serializable {
 			}
 			return donors;
 		} catch (Exception e) {
-			System.out.println("Error getting a Donor.");
+			System.out.println("Error getting Donors.");
 			return null;
 		}
 	}

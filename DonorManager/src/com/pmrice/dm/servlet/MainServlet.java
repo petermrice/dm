@@ -3,7 +3,6 @@ package com.pmrice.dm.servlet;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,11 +16,6 @@ import com.pmrice.dm.model.User;
 /**
  * Servlet implementation class MainServlet. Handles admin, donor, donation and pledge units.
  */
-@WebServlet(
-		description = "The servlet for editing donors, donations and pledges", 
-		urlPatterns = { "/MainServlet", "/main" },
-		loadOnStartup = 0
-		)
 public class MainServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	public static MainServlet INSTANCE;
@@ -133,8 +127,8 @@ public class MainServlet extends HttpServlet {
 			pledge.setEndDate((String)request.getParameter("end_date"));
 			pledge.setAmount(request.getParameter("amount"));
 			pledge.setDescription(request.getParameter("description"));
-			pledge.setFulfilled(request.getParameter("fulfilled") != null);
-			pledge.setCancelled(request.getParameter("cancelled") != null);
+			pledge.setFulfilled(request.getParameter("fulfilled") != null && request.getParameter("fulfilled").length() > 0);
+			pledge.setCancelled(request.getParameter("cancelled") != null && request.getParameter("cancelled").length() > 0);
 			pledge.setNote(request.getParameter("note"));
 			if (pledge_id == 0) Pledge.add(pledge);
 			else Pledge.update(pledge);
@@ -150,12 +144,12 @@ public class MainServlet extends HttpServlet {
 		case "delete_pledge":{
 			int pledgeId = Integer.parseInt(request.getParameter("pledge_id"));
 			int donorId = Integer.parseInt(request.getParameter("donor_id"));
-			Donation.remove(pledgeId);
+			Pledge.remove(pledgeId);
 			forwardToEditDonationsPledges(request, response, donorId, 0, 0);	
 			}
 			break;
 
-		case "save_donor":
+		case "save_donor":{
 			int id = Integer.parseInt(request.getParameter("donor_id"));
 			Donor donor = new Donor();
 			if (id != 0) donor = Donor.get(id);
@@ -170,13 +164,13 @@ public class MainServlet extends HttpServlet {
 			donor.setTelephone(request.getParameter("telephone"));
 			donor.setEmail(request.getParameter("email"));
 			donor.setNotes(request.getParameter("notes"));
-			Object o = request.getParameter("hidden");
-			if (o != null)
-			donor.setHidden(o.equals("false") ? false : true);
+			String ishidden = request.getParameter("hidden");
+			donor.setHidden((ishidden != null && ishidden.length() > 0) ? true : false);
 			if (id != 0) Donor.update(donor);
 			else Donor.add(donor);
 			request.getSession().setAttribute("donors", Donor.getDonors()); // refresh the list
 			forwardToEditDonors(request, response, 0);
+			}
 			break;
 		case "show_donor":{
 			String donor_id = request.getParameter("donor_id");
@@ -190,6 +184,23 @@ public class MainServlet extends HttpServlet {
 			request.getSession().setAttribute("donors", Donor.getDonors()); // refresh the list
 			forwardToEditDonors(request, response, 0);}
 			break;
+		case "manage_donor":{
+			int donorId = Integer.parseInt(request.getParameter("donor_id"));
+			String unhide = request.getParameter("unhide");
+			String delete = request.getParameter("delete");
+			boolean unHide = unhide != null && unhide.length() > 0 ? true : false;
+			boolean doDelete = delete != null && delete.length() > 0 ? true : false;
+			if (doDelete) {
+					Donor.remove(donorId);
+					request.getRequestDispatcher("/displayHiddenDonors.jsp").forward(request, response);
+				} else if (unHide) {
+					Donor donor = Donor.get(donorId);
+					donor.setHidden(false);
+					Donor.update(donor);
+					request.getRequestDispatcher("/displayHiddenDonors.jsp").forward(request, response);
+				}
+			}
+			
 		case "logout":{
 			HttpSession session = request.getSession();
 			if (session != null) session.invalidate();

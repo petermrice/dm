@@ -2,6 +2,10 @@
     pageEncoding="UTF-8" import="com.pmrice.dm.model.*, com.pmrice.dm.util.*, java.util.*"%>
 <!DOCTYPE html>
 <%  
+	if (session == null || session.getAttribute("activeUser") == null){
+		request.setAttribute("message", "Your session has expired. Please log in again.");
+		request.getRequestDispatcher("/login.jsp").forward(request, response);
+	}
 	boolean userIsAdmin = ((User)request.getSession().getAttribute("activeUser")).isAdmin();
 	List<Donor> donors = (List<Donor>)request.getSession().getAttribute("donors");
 	int donorId = (int)request.getAttribute("donor_id"); 
@@ -102,6 +106,9 @@
 		<li class="topmenu_item" <%=userIsAdmin ? "" : "hidden" %>>
 			<a href="main?action=admin">Admin</a>
 		</li>
+		<li class="topmenu_item">
+			<a href="displayHiddenDonors.jsp">Manage Hidden Donors</a>
+		</li>
 	</ul>
 
 	<h2>View and Edit Donor Information</h2>
@@ -123,6 +130,7 @@
 			<tr><td>Telephone</td><td><input type="tel" placeholder="000-000-0000" class="textinput" name="telephone" value="<%=donor.getTelephone()%>"></td></tr>
 			<tr><td>EMail</td><td><input type="email" class="textinput" name="email" value="<%=donor.getEmail()%>"></td></tr>
 			<tr><td>Notes</td><td><textarea rows="3" cols="40" name="notes"><%=donor.getNotes()%></textarea></td></tr>
+			<tr><td>Hide</td><td><input type="checkbox" name="hidden" value="checked" <%=donor.isHidden() ? "checked" : ""%>></td></tr>
 			<tr><td><input type="hidden" name="donor_id" value="<%=donor.getId()%>">
 					<input type="hidden" name="action" value="save_donor">
 					<input id="donorSave" type="submit" value="SAVE"></td></tr>

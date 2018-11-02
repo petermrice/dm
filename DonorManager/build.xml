@@ -10,7 +10,7 @@
      ====================================================================== -->
 <project name="build_war" default="build">
     <description>
-            description
+            build the DonorManager.war application
     </description>
 	
 	<property name="src" value="${basedir}/src"/>
@@ -19,6 +19,7 @@
 	<property name="warfile" value="DonorManager.war"/>
 	<property name="lib" value="${basedir}/WebContent/WEB-INF/lib"/>
 	<property name="tomcat" value="/Users/peterrice/dm/apache-tomcat-8.5.34"/>
+	<property name="build.compiler" value="javac1.8"/>
 
 	<path id="classpath">
 		<pathelement path="${classpath}"/>

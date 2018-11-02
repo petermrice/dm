@@ -3,6 +3,10 @@
 <!DOCTYPE html>
 <%
 	List<Donor> donors = (List<Donor>)request.getSession().getAttribute("donors");
+	if (session == null || session.getAttribute("activeUser") == null){
+		request.setAttribute("message", "Your session has expired. Please log in again.");
+		request.getRequestDispatcher("/login.jsp").forward(request, response);
+	}
 	boolean userIsAdmin = ((User)request.getSession().getAttribute("activeUser")).isAdmin();
 %>
 <html>

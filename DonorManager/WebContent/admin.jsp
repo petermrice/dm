@@ -2,16 +2,20 @@
     pageEncoding="UTF-8" import="com.pmrice.dm.model.*, com.pmrice.dm.util.*, java.util.*"%>
 <!DOCTYPE html>
 <%  
+	if (session == null || session.getAttribute("activeUser") == null){
+		request.setAttribute("message", "Your session has expired. Please log in again.");
+		request.getRequestDispatcher("/login.jsp").forward(request, response);
+	}
 	boolean userIsAdmin = ((User)request.getSession().getAttribute("activeUser")).isAdmin();
 
 	List<User> users = User.getUsers();
 	User user = null;
-	Object userid = request.getAttribute("userid"); 
-	if (userid == null) user = new User("","",false);
-	else user = User.get((String)userid);
+	Object usero = request.getAttribute("userid"); 
+	if (usero == null) user = new User("","",false);
+	else user = User.get((String)usero);
 	Object m = request.getAttribute("message");
 	String message = (m != null) ? (String)m : "";
-	userid = user.getUserid();
+	String userid = user.getUserid();
 	String password = user.getPassword();
 	boolean admin = user.isAdmin();
 	
