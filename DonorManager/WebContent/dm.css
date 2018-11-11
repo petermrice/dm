@@ -1,0 +1,48 @@
+body {
+	font-size: large;}
+
+.container {
+	display:flex;
+	justify-content: center;}
+
+.menubutton{
+	border:line;
+	color:Tomato;
+	font-size: 20px;}
+.deletebutton{
+	border:line;
+	color:Blue;
+	font-size: 20px;}
+
+ul.topmenu {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background-color: #333;	}
+li.topmenu_item {
+	float: left;}
+li.topmenu_item a {
+	display: block;
+	color: white;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;	}
+li a:hover {
+	background-color: $111;	}
+h2.title {
+	text-align: center;	}
+input[type="text"]{
+    font-size:18px;}
+input[type="password"]{
+    font-size:18px;}
+input[type="number"]{
+    font-size:18px;}
+input[type="checkbox"]{
+    font-size:18px;}
+input[type="tel"]{
+    font-size:18px;}
+input[type="email"]{
+    font-size:18px;}
+select {
+    font-size:18px;}

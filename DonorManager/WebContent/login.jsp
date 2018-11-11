@@ -28,6 +28,6 @@
 	</form>
     <h3><font color="#FF0000"><%String msg = (String)request.getAttribute("message");
       	if (msg != null && msg.length() > 0) out.print(msg);%></font></h3>
-<div>
+</div>
 </body>
 </html>

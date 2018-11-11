@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Donor Manager Help</title>
+<style>
+	body {
+		font-size: 20px;
+	}
+</style>
+</head>
+<body>
+<h2>Help for the Donor Manager Program</h2>
+
+<h3>Author: Peter Rice, copyright 2018</h3>
+
+<b>Purpose</b><br><br>
+	This program exists to support organizations which raise money from 
+	individuals and groups through personal contact. We understand their 
+	need to<br>
+<ol>
+<li>Maintain a list of names, contact information, donation history, pledge 
+records (if this applies) and other information which is useful in the 
+business of encouraging donations.</li>
+<li>Edit this data using whatever device is at hand (computer, tablet or 
+smart phone) and from anywhere they might be.</li>
+<li>Produce reports from the data which shows lists of contacts determined 
+by geographic area, date of last donation, total annual donation, etc. 
+As well, if information is entered here which is needed for maintaining 
+the financial data of the organization, it should be available in a format 
+which can easily be incorporated in the software used for keeping books.</li>
+<li>The program should also make it easy to send messages to one or many 
+people for whom contact data exists.</li>
+</ol>
+
+<p>This program does not assist in the production of solicitation products, 
+(outside of messages sent through email or text messaging), production of 
+web pages or the delivery and collection of electronic data on current or 
+potential donors.</p>
+
+<p>This program does not maintain or produce any financial data outside of 
+lists of donations received. However, these lists can be exported to *.csv 
+files, which can be imported into commonly used financial software.</p>
+
+<b>Philosophy</b>
+	<p>A Donor is a person or entity (typically represented by a person) 
+	with direct contact data. The Donors page has fields for the entry 
+	of name, address, city, state, zip,  country, telephone number and 
+	email address of a donor. There is also a Notes field for any other 
+	data which might be good to have. In theory, a report can be generated 
+	which refers to one or more of these fields for selection purposes. 
+	For example, a report on all donors with a given zip code, or all who 
+	live in a given state but do not have a specific zip code.</p>
+	<p>Once the data for a donor (actual or anticipated) is entered, we assume 
+	that it is not desirable to delete that data. One never knows when a 
+	contact once made might have a positive result. It is, however, possible 
+	to Hide a donor's data. There is a separate screen for examining the 
+	hidden donors, and from there either un-hiding or deleting them.</p>
+	<p>In addition to informa	tion on donations, there is a separate record 
+	for information on pledges. The program does not make assumptions on 
+	the exact nature of a pledge beyond recording that one exists, has a 
+	beginning and ending date and involves some stated amount (whether a 
+	total or a monthly amount is not important) and a description of some 
+	sort. The user will have to keep up with the progress of donations 
+	against the pledge and record when, if ever, it is completed or abandoned.</p>
+
+<h3>Screen by screen help:</h3>
+
+<b>Login:</b> this screen appears at initial entry to the web site, and the user 
+is required to enter a valid userid and password. If you expect to know 
+how to do this, but do not, please contact the person who is responsible 
+for enrolling users. If incorrecct data is entered, you will be returned 
+to this screen and a message will tell you that you have failed to enter 
+valid values.<br><br>
+
+It is also possible to return to this screen if you decide to log out of 
+the program or if some other problem requires that you log in again.<br><br>
+
+A successful entry of valid data will take you to the Donors screen.<br><br>
+
+<b>Donors:</b> The title of the screen is "View and Edit Donor 
+Information. If the name in the Name field is 
+“New Donor” when you enter the screen, 
+you are being invited to enter data for a new donor. If you 
+come to this screen by selecting “Donors” from the menu in any screen, 
+you might see actual donor data. In this case, you are being invited to 
+edit the data. After making appropriate entries, you may save, and get 
+the “New Donor” setup. If you wish to enter a new donor but there is 
+already data for an existing donor showing, select the “New Donor” button 
+on the right. If your reason for being here is to work on donations by a 
+specific donor, you may press the name of that person in the list to the 
+right to load their data, then press the “Donations for this Donor” button 
+to go to the screen where that information is entered or edited.<br><br>
+
+In addition, the menu across the top invites you to enter the “Emails” 
+screen, the “Reports” screen, the “Manage Hidden Donors” screen or to 
+“Logout”. If you are an “admin” user, you may also select to enter the 
+“Admin” screen.<br><br>
+
+<b>Manage Hidden Donors:</b> If there are no hidden donors, this page only shows 
+a message to that effect. If the there are any, there is a list showing 
+the id, name and two check boxes, one for “un hide” and one for “delete”. 
+Un-hide means that the hidden donor is no longer hidden (it disappears 
+from the list) and can be edited back in the Donor screen. Delete means 
+just that – it is gone.<br><br>
+
+Hiding donors can make working with the Donors list easier because inactive donors 
+do not appear, and the list is shorter. But a donor can quickly become active, 
+so allowing them to become un-hidden means all of the data about them is 
+available again.<br><br>
+
+<b>Emails:</b> From here you can select a donor, add a From address, a BCC address, 
+a subject and the text of a message, and send it. If it was successfully 
+sent, a message will appear in a separate tab on your browser, showing the 
+details. If you put your own address in BCC, a copy will be sent to that address. 
+A failure will be announced in a separate browser tab.<br><br>
+
+We plan to add a feature to select a set of recipients and send an email to 
+each one--not one email with multiple recipients, but one single email to 
+each recipient. <br><br>
+
+<b>Reports:</b> Each line in the list of available reports represents one way to 
+view donations – by date range, including all donations or just the donations 
+for one donor. That last report may be copied and pasted into an email or 
+a letter as a report to a donor on their gifts for a year.<br><br>
+
+<b>Admin:</b> This screen is available to logins which are certified as “admin”. 
+The purpose of this is to allow multiple people to view and work on the 
+donor list and the donations, but to limit the ability to add other users 
+or to make essential changes to the system to people who are selected for 
+that chore.<br><br>
+
+On the screen is the panel which allows the user to add a new user, remove 
+a user or change the password of a user. It is not possible to have two 
+users with the same userid!<br><br>
+
+The other panel on this screen contains the information required to send 
+an email. This includes the url of the mail system host, the userid 
+(mail address) and password of the mail user. The port value is whatever 
+the mail host requires. All of this information is 
+available from the mail host prganization.<br><br>
+
+</body>
+</html>
