@@ -11,27 +11,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="dm.css">
 	<style>
-		ul.topmenu {
-			list-style-type: none;
-			margin: 0;
-			padding: 0;
-			overflow: hidden;
-			background-color: #333;
-			}
-		li.topmenu_item {
-		float: left;
-			}
-		li.topmenu_item a {
-			display: block;
-			color: white;
-			text-align: center;
-			padding: 14px 16px;
-			text-decoration: none;
-			}
-		li a:hover {
-			background-color: $111;
-			}
 		#emailSend {
 			border:line;
 			color:Tomato;
@@ -62,7 +43,8 @@
 	</ul>
 
 
-<h2>Send Emails</h2>
+<h2 class="title">Send Emails</h2>
+<div class="container">
 <form action="mail" target="_blank">
 	<table>
 		<tr><td>To:</td><td><select name="to">
@@ -74,8 +56,9 @@
 		<tr><td>Subject:</td><td><input type="text" name="subject" required></td></tr>
 		<tr><td>Message:</td><td><textarea rows="20" cols="80" name="message_text"></textarea></td></tr>
 		<tr><td><input type="hidden" name="action" value="to_individual">
-		<tr><td><input id="emailSend" type="submit" value="SEND"></td></tr>
+			<input id="emailSend" type="submit" value="SEND"></td></tr>
 	</table>
 </form>
+</div>
 </body>
 </html>

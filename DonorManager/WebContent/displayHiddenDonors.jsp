@@ -4,32 +4,13 @@
 <% List<Donor> donors =  Donor.getHiddenDonors(); %>
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="dm.css">
 	<style>
 		#commit {
 			border:line;
 			color:Tomato;
 			font-size: 16px;}		
 			
-		ul.topmenu {
-			list-style-type: none;
-			margin: 0;
-			padding: 0;
-			overflow: hidden;
-			background-color: #333;
-			}
-		li.topmenu_item {
-			float: left;
-			}
-		li.topmenu_item a {
-			display: block;
-			color: white;
-			text-align: center;
-			padding: 14px 16px;
-			text-decoration: none;
-			}
-		li a:hover {
-			background-color: $111;
-			}
 	</style>
 	<meta charset="UTF-8">
 	<title>Manage Hidden Donors</title>
@@ -40,8 +21,11 @@
 			<a href="main?action=show_donor">Donors</a>		
 		</li>
 	</ul>
-<h2>Hidden Donor List</h2>
+<h2 class="title">Hidden Donor List</h2>
+
+<div class="container">
 <br>
+<% if (donors.size() == 0) out.print("There are no hidden Donors.");%>
 <ul>
 <% for (Donor donor : donors){ %>
 	<li><form action="main" >
@@ -55,6 +39,6 @@
 	</form></li>
 <%}%>
 </ul>
-
+</div>
 </body>
 </html>

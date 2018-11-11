@@ -131,7 +131,10 @@ public class User {
 		try {
 			ResultSet rs = con.createStatement().executeQuery("SELECT * FROM user WHERE userid = '" + userid + "';");
 			if (rs.next()) return true;
-			else return false;
+			else {
+				System.err.println(userid + " is not a valid userid in the system.");
+				return false;
+			}
 		} catch (Exception e) {
 			return false;
 		}
@@ -143,7 +146,12 @@ public class User {
 			Connection connection = Util.getConnection();
 			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM user WHERE userid = '" + userid + "';");
 			if (rs.next() == false) return false;
-			return password.equals(rs.getString("password"));
+			boolean passwordok = password.equals(rs.getString("password"));
+			if (passwordok) return true;
+			else {
+				System.out.println(password + " is an incorrect password for userid");
+				return false;
+			}
 		} catch (SQLException e) {
 			System.out.println(e);
 			return false;

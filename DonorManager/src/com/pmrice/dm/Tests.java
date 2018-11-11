@@ -36,6 +36,11 @@ class Tests {
 	@Test
 	void utilTest() {
 		assertNotNull(Util.getConnection());
+		assertEquals("10/4/2017", Util.storageToDisplay("2017-10-04"));
+		assertEquals("5/4/2017", Util.storageToDisplay("2017-05-04"));
+		assertEquals("2018-10-11", Util.displayToStorage("10/11/2018"));
+		assertEquals("2018-05-11", Util.displayToStorage("5/11/2018"));
+		assertEquals("2018-10-05", Util.displayToStorage("10/5/2018"));
 	}
 	
 	@Test

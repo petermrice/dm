@@ -23,6 +23,7 @@
 %>
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="dm.css">
 	<script>
 	function validateUserForm() {
 		var x = document.forms["edit_form"]["userid"].value;
@@ -41,39 +42,6 @@
 		if (x != "") alert(x);
 	}
 	</script>
-	<style>
-		.menubutton{
-			border:line;
-			color:Tomato;
-			font-size: 20px;}
-		.deletebutton{
-			border:line;
-			color:Blue;
-			font-size: 20px;}
-	
-	</style>
-	<style>
-		ul.topmenu {
-			list-style-type: none;
-			margin: 0;
-			padding: 0;
-			overflow: hidden;
-			background-color: #333;
-			}
-		li.topmenu_item {
-		float: left;
-			}
-		li.topmenu_item a {
-			display: block;
-			color: white;
-			text-align: center;
-			padding: 14px 16px;
-			text-decoration: none;
-			}
-		li a:hover {
-			background-color: $111;
-			}
-	</style>
 <meta charset="UTF-8">
 <title>Donor Manager - Admin</title>
 </head>
@@ -95,8 +63,10 @@
 			<a href="main?action=admin">Admin</a>
 		</li>
 	</ul>
-
-<div id="userBlock" style="float: left; width: 40%; height:500px">
+<div class="container">
+<table>
+<tr><td>
+<div id="userBlock" style="width: 300px; height:500px">
 	<h2>User Manager</h2>
 	<form name="edit_form" action="main" method="post" onsubmit="return validateUserForm()">
 		<table>
@@ -128,21 +98,20 @@
 	</ul>
 	<br>
 </div>
-
-<div id="mailBLock" style="float: right; width: 40%; height:250px">
+</td><td>
+<div id="mailBLock" style="width: 400px; height:500px">
 <h2>EMail Setup</h2>
 <form action="mail?action=save_mail_data" method="post">
 	<table>
-	<tr><td>Mail Host URL</td><td><input type="text" name="url" value=<%=mconfig.getUrl() %>></td></tr>
-	<tr><td>SMTP Port</td><td><input type="number" name="port"value=<%=mconfig.getPort() %>></td></tr>
-	<tr><td>Authorized Userid</td><td><input type="text" name="userid"value=<%=mconfig.getUserid() %>></td></tr>
-	<tr><td>Authorized User Password</td><td><input type="text" name="password"value=<%=mconfig.getPassword() %>></td></tr>
+	<tr><td>Mail Host URL</td><td><input type="text" name="url" value="<%=mconfig.getUrl() %>"></td></tr>
+	<tr><td>SMTP Port</td><td><input type="number" name="port"value="<%=mconfig.getPort() %>"></td></tr>
+	<tr><td>Authorized Userid</td><td><input type="text" name="userid" value="<%=mconfig.getUserid() %>"></td></tr>
+	<tr><td>Authorized User Password</td><td><input type="text" name="password" value="<%=mconfig.getPassword() %>"></td></tr>
 	<tr><td><input type="submit" value="SAVE" class="menubutton"></td><td><input type="hidden" name="action" value="save_mail_data"></td></tr>
 	</table>
 </form>
-
-
-
+</div>
+</td></tr></table>
 </div>
 </body>
 </html>

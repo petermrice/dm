@@ -19,6 +19,7 @@
 %>
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="dm.css">
 	<script>
 	
 	function validatePledgeForm() {
@@ -41,25 +42,8 @@
 
 	</script>
 	<style>
-		ul.topmenu {
-			list-style-type: none;
-			margin: 0;
-			padding: 0;
-			overflow: hidden;
-			background-color: #333;
-			}
-		li.topmenu_item {
-			float: left;
-			}
-		li.topmenu_item a {
-			display: block;
-			color: white;
+		h2 {
 			text-align: center;
-			padding: 14px 16px;
-			text-decoration: none;
-			}
-		li a:hover {
-			background-color: $111;
 			}
 	</style>
 	<style>
@@ -80,17 +64,7 @@
 	
 		.textinput {
 			width:300px;
-			}
-		
-		.menubutton{
-			border:line;
-			color:BLue;
-			font-size: 20px;}
-				
-		#donationSave {
-			border:line;
-			color:Tomato;
-			font-size: 20px;}
+			}				
 																
 		#donationBlock {
 			width:400px;
@@ -98,12 +72,7 @@
 			border-style:none;
 			margin:5px;
 			}
-		
-		#pledgeSave {
-			border:line;
-			color:Tomato;
-			font-size: 20px;}
-																
+																		
 		#pledgeBlock {
 			width:400px;
 			height:500px;
@@ -133,6 +102,7 @@
 		</li>
 	</ul>
 
+<div style="30px;text-align: center; font-weight: bold;" >Donations and Pledges for: <%=Donor.get(donorId).getName()%></div>
 
 <table><tr><td>
 <div id="donationBlock">
@@ -144,7 +114,7 @@
 			<tr><td>Description</td><td><input type="text" class="textinput" name="description" value="<%=donation.getDescription()%>"></td></tr>
 			<tr><td>Amount</td><td><input type="text" class="textinput" name="amount" value="<%=donation.getAmount()%>"></td></tr>
 			<tr><td>Note</td><td><textarea rows="3" cols="40" name="note"><%=donation.getNote()%></textarea></td></tr>
-			<tr><td><input id="donationSave" type="submit" value="SAVE"/></td><td>
+			<tr><td><input class="menubutton" type="submit" value="SAVE"/></td><td>
 				<input type="hidden" name="donor_id" value="<%=Integer.toString(donorId)%>">
 				<input type="hidden" name="donation_id" value="<%=donation.getId()%>">
 					<input type="hidden" name="action" value="save_donation"></td></tr>
@@ -190,7 +160,7 @@
 			<tr><td>Fulfilled</td><td><input type="checkbox" name="fulfilled" value="checked" <%= pledge.isFulfilled() ? "checked" : "" %>/></td></tr>
 			<tr><td>Cancelled</td><td><input type="checkbox" name="cancelled" value="checked" <%= pledge.isCancelled() ? "checked" : "" %>/></td></tr>
 			<tr><td>Note</td><td><textarea rows="3" cols="40" name="note"><%=pledge.getNote()%></textarea></td></tr>
-			<tr><td><input id="pledgeSave" type="submit" value="SAVE"/></td><td>
+			<tr><td><input class="menubutton" type="submit" value="SAVE"/></td><td>
 				<input type="hidden" name="donor_id" value="<%=Integer.toString(donorId)%>"/>
 				<input type="hidden" name="pledge_id" value="<%=pledge.getId()%>"/>
 					<input type="hidden" name="action" value="save_pledge"/></td></tr>

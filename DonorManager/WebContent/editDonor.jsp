@@ -14,6 +14,8 @@
 %>
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="dm.css">
+
 	<script>
 	function validateDonorForm() {
 		var x = document.forms["edit_form"]["lastname"].value;
@@ -25,7 +27,6 @@
 	</script>
 	
 	<style>
-	
 		ul.list {
 			overflow:hidden; 
 			overflow-y:scroll;
@@ -53,37 +54,7 @@
 		.menubutton {
 			border:line;
 			color:Blue;
-			font-size: 20px;}
-				
-		#donorBlock {
-			width:400px;
-			height:500px;
-			border-style:none;
-			margin:5px;
-			}
-							
-	</style>
-	<style>
-		ul.topmenu {
-			list-style-type: none;
-			margin: 0;
-			padding: 0;
-			overflow: hidden;
-			background-color: #333;
-			}
-		li.topmenu_item {
-		float: left;
-			}
-		li.topmenu_item a {
-			display: block;
-			color: white;
-			text-align: center;
-			padding: 14px 16px;
-			text-decoration: none;
-			}
-		li a:hover {
-			background-color: $111;
-			}
+			font-size: 20px;}	
 	</style>
 	
 <meta charset="UTF-8">
@@ -109,11 +80,15 @@
 		<li class="topmenu_item">
 			<a href="displayHiddenDonors.jsp">Manage Hidden Donors</a>
 		</li>
+		<li class="topmenu_item">
+			<a href="help.html" target="_blank">Help</a>
+		</li>
+
 	</ul>
 
-	<h2>View and Edit Donor Information</h2>
+	<h2 class="title">View and Edit Donor Information</h2>
 
-<div id="donorBlock" >
+<div id="donorBlock" class="container" >
 <table><tr>
 	<td>
 	<h4>Donor Information</h4>
@@ -129,8 +104,8 @@
 			<tr><td>Country</td><td><input type="text" class="textinput" name="country" value="<%=donor.getCountry()%>"></td></tr>
 			<tr><td>Telephone</td><td><input type="tel" placeholder="000-000-0000" class="textinput" name="telephone" value="<%=donor.getTelephone()%>"></td></tr>
 			<tr><td>EMail</td><td><input type="email" class="textinput" name="email" value="<%=donor.getEmail()%>"></td></tr>
-			<tr><td>Notes</td><td><textarea rows="3" cols="40" name="notes"><%=donor.getNotes()%></textarea></td></tr>
 			<tr><td>Hide</td><td><input type="checkbox" name="hidden" value="checked" <%=donor.isHidden() ? "checked" : ""%>></td></tr>
+			<tr><td>Notes</td><td><textarea rows="3" cols="40" name="notes"><%=donor.getNotes()%></textarea></td></tr>
 			<tr><td><input type="hidden" name="donor_id" value="<%=donor.getId()%>">
 					<input type="hidden" name="action" value="save_donor">
 					<input id="donorSave" type="submit" value="SAVE"></td></tr>
@@ -157,12 +132,15 @@
 	 		<input type="hidden" name="donor_id" value="<%=donor.getId()%>">
 	 		<input type="hidden" name="donation_id" value="0">
 			</form>
+	 		<h3><font color="#FF0000"><%String msg = (String)request.getAttribute("message");
+      	if (msg != null && msg.length() > 0) out.print(msg);%></font></h3>
 		</li>
 
 		</ul>
 	</td>
 </tr></table>	
 </div>
+
 
 </body>
 </html>

@@ -1,5 +1,7 @@
 package com.pmrice.dm.servlet;
 
+import java.util.List;
+
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,15 +13,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.pmrice.dm.util.Currency;
 import com.pmrice.dm.util.Util;
+import com.pmrice.dm.model.Donor;
 
 /**
  * Servlet implementation class ReportsServlet. Handles all reporting.
  */
 public class ReportsServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static final String TABLE_STYLE = "<style>table, th, td {border: 1px solid black;border-collapse: collapse;}"
+	private static final String DONATION_TABLE_STYLE = "<style>table, th, td {border: 1px solid black;border-collapse: collapse;}"
 			+ " th, td {padding: 5px;} table {border-spacing: 15px;}</style>";
-	private static final String TABLE_HEADER = "<tr><th>Donor Name</th><th>Date</th><th>Amount</th><th>Description</th><tr>";
+	private static final String DONATION_TABLE_HEADER = "<tr><th>Donor Name</th><th>Date</th><th>Amount</th><th>Description</th><tr>";
+	private static final String DONOR_TABLE_STYLE = "<style></style>";
+	private static final String DONOR_TABLE_HEADER = "<tr><th>Last Name</th><th>Name</th><th>Address</th><th>Address</th>" +
+		"<th>City</th><th>State</th><th>ZIP</th><th>Country</th><th>Telephone</th><th>Email</th><th>Notes</th><tr>";
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -64,8 +70,11 @@ public class ReportsServlet extends HttpServlet {
 			response.getWriter().println(text);
 			}
 			break;
+		case "donors":
+			response.getWriter().println(getActiveDonors());
+			break;
 		default:
-			response.getWriter().append("Served at: ").append(request.getContextPath());
+			response.getWriter().append("Missing case: '" + action + "'");
 		}
 	}
 
@@ -82,10 +91,10 @@ public class ReportsServlet extends HttpServlet {
 			ResultSet rs = Util.getConnection().createStatement().executeQuery(sql);
 			StringBuilder sb = new StringBuilder();
 			sb.append("<html><head><title>Donation Report</title></head>");
-			sb.append(TABLE_STYLE);
+			sb.append(DONATION_TABLE_STYLE);
 			sb.append("<body>");
 			sb.append("<h2>Donations on " + date + "</h2>");
-			sb.append("<table>").append(TABLE_HEADER);
+			sb.append("<table>").append(DONATION_TABLE_HEADER);
 			while (rs.next()) {
 				sb.append("<tr><td>").append(rs.getString("donor.name")).append("</td><td>").append(Util.storageToDisplay(rs.getString("donation.date"))).append("</td><td>")
 				.append(Currency.getDisplay(rs.getString("donation.amount"),true)).append("</td><td>").append(rs.getString("donation.description")).append("</td></tr>");
@@ -105,10 +114,10 @@ public class ReportsServlet extends HttpServlet {
 			ResultSet rs = Util.getConnection().createStatement().executeQuery(sql);
 			StringBuilder sb = new StringBuilder();
 			sb.append("<html><head><title>Donation Report</title></head>");
-			sb.append(TABLE_STYLE);
+			sb.append(DONATION_TABLE_STYLE);
 			sb.append("<body>");
 			sb.append("<h2>Donations in " + Util.getMonthName(month) + "</h2>");
-			sb.append("<table>").append(TABLE_HEADER);
+			sb.append("<table>").append(DONATION_TABLE_HEADER);
 			while (rs.next()) {
 				sb.append("<tr><td>").append(rs.getString("donor.name")).append("</td><td>").append(Util.storageToDisplay(rs.getString("donation.date"))).append("</td><td>")
 				.append(Currency.getDisplay(rs.getString("donation.amount"),true)).append("</td><td>").append(rs.getString("donation.description")).append("</td></tr>");
@@ -123,15 +132,16 @@ public class ReportsServlet extends HttpServlet {
 	private String createYearReport(String year) {
 		String yearBegin = year + "-01-01";
 		String yearEnd = year + "-12-31";
-		String sql = "SELECT * FROM donor, donation WHERE donation.donor_id = donor.id AND donation.date BETWEEN '" + yearBegin + "' AND '" + yearEnd + "';";
+		String sql = "SELECT * FROM donor, donation WHERE donation.donor_id = donor.id AND donation.date >= '" + yearBegin + 
+			"' AND donation.date <= '" + yearEnd + "';";
 		try {
 			ResultSet rs = Util.getConnection().createStatement().executeQuery(sql);
 			StringBuilder sb = new StringBuilder();
 			sb.append("<html><head><title>Donation Report</title></head>");
-			sb.append(TABLE_STYLE);
+			sb.append(DONATION_TABLE_STYLE);
 			sb.append("<body>");
 			sb.append("<h2>Donations in the year " + year + "</h2>");
-			sb.append("<table>").append(TABLE_HEADER);
+			sb.append("<table>").append(DONATION_TABLE_HEADER);
 			while (rs.next()) {
 				sb.append("<tr><td>").append(rs.getString("donor.name")).append("</td><td>").append(Util.storageToDisplay(rs.getString("donation.date"))).append("</td><td>")
 				.append(Currency.getDisplay(rs.getString("donation.amount"),true)).append("</td><td>").append(rs.getString("donation.description")).append("</td></tr>");
@@ -154,10 +164,10 @@ public class ReportsServlet extends HttpServlet {
 			ResultSet rs = Util.getConnection().createStatement().executeQuery(sql);
 			StringBuilder sb = new StringBuilder();
 			sb.append("<html><head><title>Donation Report</title></head>");
-			sb.append(TABLE_STYLE);
+			sb.append(DONATION_TABLE_STYLE);
 			sb.append("<body>");
 			sb.append("<h2>Donations in the year " + year + " by " + donorName + "</h2>");
-			sb.append("<table>").append(TABLE_HEADER);
+			sb.append("<table>").append(DONATION_TABLE_HEADER);
 			while (rs.next()) {
 				sb.append("<tr><td>").append(rs.getString("donor.name")).append("</td><td>").append(Util.storageToDisplay(rs.getString("donation.date"))).append("</td><td>")
 				.append(Currency.getDisplay(rs.getString("donation.amount"),true)).append("</td><td>").append(rs.getString("donation.description")).append("</td></tr>");
@@ -167,6 +177,32 @@ public class ReportsServlet extends HttpServlet {
 		} catch (SQLException e) {
 			return e.toString();
 		}
+	}
+	
+	private String getActiveDonors(){
+		List<Donor> list = Donor.getDonors();
+		StringBuilder sb = new StringBuilder();
+		sb.append("<html><head><title>Active Donors List</title></head>");
+		sb.append(DONOR_TABLE_STYLE);
+		sb.append("<body>");
+		sb.append("<table>").append(DONOR_TABLE_HEADER);
+		for (Donor donor : list) {
+			if (donor.getId() == 0) continue;
+			sb.append("<tr><td>").append(donor.getLastname()).append("</td>")
+			.append("<td>").append(donor.getName()).append("</td>")
+			.append("<td>").append(donor.getAddress1()).append("</td>")
+			.append("<td>").append(donor.getAddress2()).append("</td>")
+			.append("<td>").append(donor.getCity()).append("</td>")
+			.append("<td>").append(donor.getState()).append("</td>")
+			.append("<td>").append(donor.getZip()).append("</td>")
+			.append("<td>").append(donor.getCountry()).append("</td>")
+			.append("<td>").append(donor.getTelephone()).append("</td>")
+			.append("<td>").append(donor.getEmail()).append("</td>")
+			.append("<td>").append(donor.getNotes()).append("</td>")
+			.append("</tr>");
+		}
+		sb.append("</table>").append("<br>Printed on " + Util.today()).append("</body></html>");
+		return sb.toString();
 	}
 
 }

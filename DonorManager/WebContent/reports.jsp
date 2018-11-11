@@ -11,27 +11,16 @@
 %>
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="dm.css">
 	<style>
-		ul.topmenu {
+		ul.itemlist {
+			overflow:hidden; 
+			overflow-y:scroll;
 			list-style-type: none;
 			margin: 0;
-			padding: 0;
-			overflow: hidden;
-			background-color: #333;
-			}
-		li.topmenu_item {
-		float: left;
-			}
-		li.topmenu_item a {
-			display: block;
-			color: white;
-			text-align: center;
-			padding: 14px 16px;
-			text-decoration: none;
-			}
-		li a:hover {
-			background-color: $111;
-			}
+			padding: 0;}		
+		h2 {
+			text-align: center;	}
 	</style>
 
 <meta charset="UTF-8">
@@ -56,46 +45,66 @@
 		</li>
 	</ul>
 
-	<h2>Reports</h2>
-	
-	<div><form action="reports" method="post" target="_blank">
-		<input type="submit" value="O">
-		All donations on: <input type="text" name="date" value="<%=Util.today() %>" size="10">
-		<input type="hidden" name="action" value="day">
-	</form></div>	
-	<div><form action="reports" method="post" target="_blank">
-		<input type="submit" value="O">
-		All donations in <select name="month">
-			<option value="01">January</option>
-			<option value="02">February</option>
-			<option value="03">March</option>
-			<option value="04">April</option>
-			<option value="05">May</option>
-			<option value="06">June</option>
-			<option value="07">Jule</option>
-			<option value="08">August</option>
-			<option value="09">September</option>
-			<option value="10">October</option>
-			<option value="11">November</option>
-			<option value="12">December</option>
-			</select> 
-		of <input type="number" name="year" value="<%=Util.year() %>" size="4">
-		<input type="hidden" name="action" value="month">
-	</form></div>	
-	<div><form action="reports" method="post" target="_blank">
-		<input type="submit" value="O">
-		All donations in <input type="number" name="year" value="<%=Util.year() %>" size="4">
-		<input type="hidden" name="action" value="year">
-	</form></div>	
-	<div><form action="reports" method="post" target="_blank">
-		<input type="submit" value="O">
-		All donations in <input type="number" name="year" value="<%=Integer.toString(Util.year()) %>" size="4">
-		by: <select name="donor">
-		<%for (Donor donor : donors){ if (donor.getId() == 0) continue;  %>
-			<option><%=(donor.getId() + ": " + donor.getName())%></option>
-		<%} %></select>
-		<input type="hidden" name="action" value="donor">
-	</form></div>	
+	<h2 class="title">Reports</h2>
+
+	<div class="container">
+	<ul class"itemlist">
+		<li class="itemlist-item">
+			<form action="reports" method="post" target="_blank">
+				<input type="submit" value="O">
+				All donations on: <input type="text" name="date" value="<%=Util.today() %>" size="10">
+				<input type="hidden" name="action" value="day">
+			</form>	
+		</li>
+		<li class="itemlist-item">	
+			<form action="reports" method="post" target="_blank">
+				<input type="submit" value="O">
+				All donations in <select name="month">
+					<option value="01">January</option>
+					<option value="02">February</option>
+					<option value="03">March</option>
+					<option value="04">April</option>
+					<option value="05">May</option>
+					<option value="06">June</option>
+					<option value="07">July</option>
+					<option value="08">August</option>
+					<option value="09">September</option>
+					<option value="10">October</option>
+					<option value="11">November</option>
+					<option value="12">December</option>
+					</select> 
+				of <input type="number" name="year" value="<%=Util.year() %>" size="4">
+				<input type="hidden" name="action" value="month">
+			</form>
+		</li>
+		<li class="itemlist-item">
+			<form action="reports" method="post" target="_blank">
+				<input type="submit" value="O">
+				All donations in <input type="number" name="year" value="<%=Util.year() %>" size="4">
+				<input type="hidden" name="action" value="year">
+			</form>
+		</li>
+		<li class="itemlist-item">
+			<form action="reports" method="post" target="_blank">
+				<input type="submit" value="O">
+				All donations in <input type="number" name="year" value="<%=Integer.toString(Util.year()) %>" size="4">
+				by: <select name="donor">
+				<%for (Donor donor : donors){ if (donor.getId() == 0) continue;  %>
+					<option><%=(donor.getId() + ": " + donor.getName())%></option>
+				<%} %></select>
+				<input type="hidden" name="action" value="donor">
+			</form>
+		</li>
+		<li class="itemlist-item">
+			<form action="reports" method="post" target="_blank">
+				<input type="submit" value="O">
+				Active Donors 
+				<input type="hidden" name="action" value="donors">
+			</form>
+		</li>
+	</ul>
+	</div>
+
 
 
 </body>

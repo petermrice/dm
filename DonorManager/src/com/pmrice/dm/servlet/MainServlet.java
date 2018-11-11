@@ -107,7 +107,11 @@ public class MainServlet extends HttpServlet {
 		case "show_donation":{
 			int donationId = Integer.parseInt(request.getParameter("donation_id"));
 			int donorId = Integer.parseInt(request.getParameter("donor_id"));
-			forwardToEditDonationsPledges(request, response, donorId, donationId, 0);}
+			if (donorId > 0) forwardToEditDonationsPledges(request, response, donorId, donationId, 0);
+			else {
+				request.setAttribute("message", "Select a donor before pressing this button.");
+				forwardToEditDonors(request, response, 0);}
+			}
 			break;
 		case "delete_donation":{
 			int donationId = Integer.parseInt(request.getParameter("donation_id"));

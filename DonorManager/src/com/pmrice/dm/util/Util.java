@@ -24,6 +24,10 @@ public class Util {
 			
 	public static Connection getConnection() {
 		try {
+			if (MainServlet.INSTANCE == null) {
+				System.out.println("The MainServlet must be running to execute this method.");
+				return null;
+			}
 			Connection connection = (Connection)MainServlet.INSTANCE.getServletContext().getAttribute("connection");
 			connection.setAutoCommit(true);
 			return connection;
@@ -34,7 +38,7 @@ public class Util {
 	}
 			
 	/**
-	 * Change a date string 'mm/dd/yyyy' to 'yyy-mm-dd' for storage.
+	 * Change a date string 'mm/dd/yyyy' to 'yyyy-mm-dd' for storage.
 	 * 
 	 * @param s
 	 * @return
@@ -45,7 +49,13 @@ public class Util {
 			System.out.println("Bad date format: " + s);
 			return "";
 		}
-		return parts[2] + "-" + parts[0] + "-" + parts[1];
+		String day = parts[1];
+		if (day.length() == 1) day = "0" + day;
+		String month= parts[0];
+		if (month.length() == 1) month = "0" + month;
+		String year= parts[2];
+		if (year.length() == 2) year = "20" + year;
+		return year + "-" + month + "-" + day;
 	}
 	
 	public static String storageToDisplay(String s) {
@@ -54,7 +64,12 @@ public class Util {
 			System.out.println("Bad date format: " + s);
 			return "";
 		}
-		return parts[1] + "/" + parts[2] + "/" + parts[0];
+		String day = parts[2];
+		String month = parts[1];
+		String year = parts[0];
+		if (month.charAt(0) == '0') month = month.substring(1);
+		if (day.charAt(0) == '0') day = day.substring(1);
+		return month + "/" + day + "/" + year;
 	}
 	
 	/**
@@ -65,9 +80,15 @@ public class Util {
 	public static boolean isDateValid(String s) {
 		if (s == null) return false;
 		String[] parts = s.split("/");
-		if (parts.length != 3 || parts[0].length() != 2 || parts[1].length() != 2 | parts[2].length() != 4) {
-			System.out.println("Bad date format: " + s);
-			return false;
+		try {
+			int day = Integer.parseInt(parts[1]);
+			int month = Integer.parseInt(parts[0]);
+			int year = Integer.parseInt(parts[2]);
+			if (day < 1 || day > 31) return false;
+			if (month < 1 || month > 12) return false;
+			if (year < 2000 || year > 3000) return false;
+		} catch (NumberFormatException e) {
+			System.out.println("Error parsing a number: " + s);
 		}
 		return true;
 	}
