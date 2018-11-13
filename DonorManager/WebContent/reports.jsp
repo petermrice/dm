@@ -48,7 +48,7 @@
 	<h2 class="title">Reports</h2>
 
 	<div class="container">
-	<ul class"itemlist">
+	<ul class="itemlist">
 		<li class="itemlist-item">
 			<form action="reports" method="post" target="_blank">
 				<input type="submit" value="O">

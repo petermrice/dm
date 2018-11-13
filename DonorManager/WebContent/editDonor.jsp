@@ -24,6 +24,13 @@
 			return false;
 		}
 	}
+	function checkDonor() {
+		var x = <%=donorId%>;
+		if (x == "0") {
+			alert("You must select a donor before going to donations.");
+			return false;
+		}
+	}
 	</script>
 	
 	<style>
@@ -126,14 +133,14 @@
 		</ul>
 		<br>
 		<ul class="menu">
-		<li><form action="main" method="post">
+		<li><form action="main" method="post" onsubmit="return checkDonor()">
 	 		<input type="submit" value="Donations for this Donor" class="menubutton">
 	 		<input type="hidden" name="action" value="show_donation">
 	 		<input type="hidden" name="donor_id" value="<%=donor.getId()%>">
 	 		<input type="hidden" name="donation_id" value="0">
 			</form>
-	 		<h3><font color="#FF0000"><%String msg = (String)request.getAttribute("message");
-      	if (msg != null && msg.length() > 0) out.print(msg);%></font></h3>
+	 		<h4><font color="#FF0000"><%String msg = (String)request.getAttribute("message");
+      	if (msg != null && msg.length() > 0) out.print(msg);%></font></h4>
 		</li>
 
 		</ul>

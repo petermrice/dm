@@ -46,7 +46,7 @@
     		<fileset dir="${basedir}/WebContent"/>
     		<lib dir="${lib}"/>
     		<classes dir="${bin}"/>
-    		<metainf dir="${basedir}/WebContent/META-INF" includes="context.xml"/>
+    		<metainf dir="${basedir}/WebContent/META-INF"/> 
     	</war>
     	<copy file="${basedir}/build/${warfile}" todir="${tomcat}/webapps"/>
     </target>
