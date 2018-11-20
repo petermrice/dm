@@ -1,7 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8" import="com.pmrice.dm.model.*, java.util.*"%>
+    pageEncoding="UTF-8" import="com.pmrice.dm.model.*, java.util.*, java.sql.*"%>
 <!DOCTYPE html>
-<% List<Donor> donors =  Donor.getHiddenDonors(); %>
+<% 
+	Connection con = (Connection)session.getAttribute("connection");
+	List<Donor> donors =  Donor.getHiddenDonors(con); 
+%>
 <html>
 <head>
 	<link rel="stylesheet" type="text/css" href="dm.css">

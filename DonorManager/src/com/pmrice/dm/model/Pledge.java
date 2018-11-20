@@ -116,11 +116,10 @@ public class Pledge implements Serializable {
 		return getDescription() + " begining on " + getBeginDate();
 	}
 	
-	public static List<Pledge> getPledgeListForDonor(int donorId){
+	public static List<Pledge> getPledgeListForDonor(Connection con, int donorId){
 		List<Pledge> list = new ArrayList<Pledge>();
 		Pledge pledge = new Pledge(0, "", Util.today());
 		list.add(pledge);
-		Connection con = Util.getConnection();
 		String sql = "SELECT id, description, begin_date FROM pledge WHERE donor_id = '" + donorId + "';";
 		try {
 			ResultSet rs = con.createStatement().executeQuery(sql);
@@ -137,8 +136,7 @@ public class Pledge implements Serializable {
 		return list;
 	}
 	
-	public static Pledge get(int id)  {
-		Connection con = Util.getConnection();
+	public static Pledge get(Connection con, int id)  {
 		try {
 			String sql = "SELECT * FROM pledge WHERE id = '" + id + "';";
 			ResultSet rs = con.createStatement().executeQuery(sql);
@@ -160,8 +158,7 @@ public class Pledge implements Serializable {
 		}
 	}
 	
-	public static boolean remove(int id) {
-		Connection con = Util.getConnection();
+	public static boolean remove(Connection con, int id) {
 		try {
 			String sql = "DELETE FROM pledge WHERE id = '" + id + "';";
 			con.createStatement().execute(sql);
@@ -177,8 +174,7 @@ public class Pledge implements Serializable {
 		}
 	}
 	
-	public static boolean update(Pledge pledge) {
-		Connection con = Util.getConnection();
+	public static boolean update(Connection con, Pledge pledge) {
 		try {
 			StringBuilder b = new StringBuilder("UPDATE pledge ")
 				.append("SET donor_id = ").append(pledge.getDonorId()).append(",")
@@ -199,8 +195,7 @@ public class Pledge implements Serializable {
 		}
 	}
 	
-	public static Pledge add(Pledge pledge) {
-		Connection con = Util.getConnection();
+	public static Pledge add(Connection con, Pledge pledge) {
 		try {
 			Statement stmnt = con.createStatement();
 			int newid = 0;

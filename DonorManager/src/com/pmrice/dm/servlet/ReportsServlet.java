@@ -1,19 +1,19 @@
 package com.pmrice.dm.servlet;
 
-import java.util.List;
-
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.pmrice.dm.model.Donor;
 import com.pmrice.dm.util.Currency;
 import com.pmrice.dm.util.Util;
-import com.pmrice.dm.model.Donor;
 
 /**
  * Servlet implementation class ReportsServlet. Handles all reporting.
@@ -39,11 +39,12 @@ public class ReportsServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String action = request.getParameter("action");
+		Connection con = (Connection)request.getSession().getAttribute("connection");
 		switch (action) {
 		case "day": // report on donations for one date
 			{	
 			String date = request.getParameter("date");
-			String text = createDateReport(date);
+			String text = createDateReport(con, date);
 			response.getWriter().println(text);
 			}
 			break;
@@ -51,14 +52,14 @@ public class ReportsServlet extends HttpServlet {
 			{
 			String year = request.getParameter("year");
 			String month = request.getParameter("month");
-			String text = createMonthReport(month, year);
+			String text = createMonthReport(con, month, year);
 			response.getWriter().println(text);
 			}
 			break;
 		case "year": // report on donations in a year
 			{
 			String year = request.getParameter("year");
-			String text = createYearReport(year);
+			String text = createYearReport(con, year);
 			response.getWriter().println(text);
 			}
 			break;
@@ -66,12 +67,12 @@ public class ReportsServlet extends HttpServlet {
 			{
 			String year = request.getParameter("year");
 			String donor = request.getParameter("donor");
-			String text = createDonorYearReport(donor, year);
+			String text = createDonorYearReport(con, donor, year);
 			response.getWriter().println(text);
 			}
 			break;
 		case "donors":
-			response.getWriter().println(getActiveDonors());
+			response.getWriter().println(getActiveDonors(con));
 			break;
 		default:
 			response.getWriter().append("Missing case: '" + action + "'");
@@ -85,10 +86,10 @@ public class ReportsServlet extends HttpServlet {
 		doGet(request, response);
 	}
 	
-	private String createDateReport(String date) {
+	private String createDateReport(Connection con, String date) {
 		String sql = "SELECT * FROM donor, donation WHERE donation.donor_id = donor.id AND donation.date = '" + Util.displayToStorage(date) + "';";
 		try {
-			ResultSet rs = Util.getConnection().createStatement().executeQuery(sql);
+			ResultSet rs = con.createStatement().executeQuery(sql);
 			StringBuilder sb = new StringBuilder();
 			sb.append("<html><head><title>Donation Report</title></head>");
 			sb.append(DONATION_TABLE_STYLE);
@@ -106,12 +107,12 @@ public class ReportsServlet extends HttpServlet {
 		}
 	}
 
-	private String createMonthReport(String month, String year) { // month is 01, 02, etc.
+	private String createMonthReport(Connection con, String month, String year) { // month is 01, 02, etc.
 		String monthBegin = year + "-" + month + "-01";
 		String monthEnd = year + "-" + month + "-31";
 		String sql = "SELECT * FROM donor, donation WHERE donation.donor_id = donor.id AND donation.date BETWEEN '" + monthBegin + "' AND '" + monthEnd + "';";
 		try {
-			ResultSet rs = Util.getConnection().createStatement().executeQuery(sql);
+			ResultSet rs = con.createStatement().executeQuery(sql);
 			StringBuilder sb = new StringBuilder();
 			sb.append("<html><head><title>Donation Report</title></head>");
 			sb.append(DONATION_TABLE_STYLE);
@@ -129,13 +130,13 @@ public class ReportsServlet extends HttpServlet {
 		}
 	}
 
-	private String createYearReport(String year) {
+	private String createYearReport(Connection con, String year) {
 		String yearBegin = year + "-01-01";
 		String yearEnd = year + "-12-31";
 		String sql = "SELECT * FROM donor, donation WHERE donation.donor_id = donor.id AND donation.date >= '" + yearBegin + 
 			"' AND donation.date <= '" + yearEnd + "';";
 		try {
-			ResultSet rs = Util.getConnection().createStatement().executeQuery(sql);
+			ResultSet rs = con.createStatement().executeQuery(sql);
 			StringBuilder sb = new StringBuilder();
 			sb.append("<html><head><title>Donation Report</title></head>");
 			sb.append(DONATION_TABLE_STYLE);
@@ -153,7 +154,7 @@ public class ReportsServlet extends HttpServlet {
 		}
 	}
 
-	private String createDonorYearReport(String donor, String year) {
+	private String createDonorYearReport(Connection con, String donor, String year) {
 		String yearBegin = year + "-01-01";
 		String yearEnd = year + "-12-31";
 		String donorId = donor.substring(0, donor.indexOf(':'));
@@ -161,7 +162,7 @@ public class ReportsServlet extends HttpServlet {
 		String sql = "SELECT * FROM donor, donation WHERE donor_id = " + donorId + " AND donation.donor_id = donor.id AND donation.date BETWEEN '" + 
 				yearBegin + "' AND '" + yearEnd + "';";
 		try {
-			ResultSet rs = Util.getConnection().createStatement().executeQuery(sql);
+			ResultSet rs = con.createStatement().executeQuery(sql);
 			StringBuilder sb = new StringBuilder();
 			sb.append("<html><head><title>Donation Report</title></head>");
 			sb.append(DONATION_TABLE_STYLE);
@@ -179,8 +180,8 @@ public class ReportsServlet extends HttpServlet {
 		}
 	}
 	
-	private String getActiveDonors(){
-		List<Donor> list = Donor.getDonors();
+	private String getActiveDonors(Connection con){
+		List<Donor> list = Donor.getDonors(con);
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html><head><title>Active Donors List</title></head>");
 		sb.append(DONOR_TABLE_STYLE);

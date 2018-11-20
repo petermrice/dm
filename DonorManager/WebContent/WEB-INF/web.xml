@@ -4,44 +4,32 @@
   xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
                       http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
   version="3.1">
-    
-  <context-param>
-    <param-name>db.url</param-name>
-    <param-value>jdbc:h2:~/dmdb</param-value>
-  </context-param>
-  <context-param>
-    <param-name>db.user</param-name>
-    <param-value></param-value>
-  </context-param>
-  <context-param>
-    <param-name>db.password</param-name>
-    <param-value></param-value>
-  </context-param>
-  <context-param>
-    <param-name>db.tcpServer</param-name>
-    <param-value>-tcpAllowOthers</param-value>
-  </context-param>
   
-  <listener>
-  	<listener-class>org.h2.server.web.DbStarter</listener-class>
-  </listener>
-    
+  <servlet>
+  	<servlet-name>LoginServlet</servlet-name>
+  	<servlet-class>com.pmrice.dm.servlet.LoginServlet</servlet-class>
+  	<load-on-startup>0</load-on-startup>
+  </servlet>
   <servlet>
   	<servlet-name>MainServlet</servlet-name>
   	<servlet-class>com.pmrice.dm.servlet.MainServlet</servlet-class>
-  	<load-on-startup>0</load-on-startup>
+  	<load-on-startup>1</load-on-startup>
   </servlet>
   <servlet>
   	<servlet-name>ReportsServlet</servlet-name>
   	<servlet-class>com.pmrice.dm.servlet.ReportsServlet</servlet-class>
-  	<load-on-startup>1</load-on-startup>
+  	<load-on-startup>2</load-on-startup>
   </servlet>
   <servlet>
   	<servlet-name>MailServlet</servlet-name>
   	<servlet-class>com.pmrice.dm.servlet.MailServlet</servlet-class>
-  	<load-on-startup>1</load-on-startup>
+  	<load-on-startup>3</load-on-startup>
   </servlet>
   
+  <servlet-mapping>
+  	<servlet-name>LoginServlet</servlet-name>
+  	<url-pattern>/login</url-pattern>
+  </servlet-mapping>
   <servlet-mapping>
   	<servlet-name>MainServlet</servlet-name>
   	<url-pattern>/main</url-pattern>

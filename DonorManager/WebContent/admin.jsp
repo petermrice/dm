@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8" import="com.pmrice.dm.model.*, com.pmrice.dm.util.*, java.util.*"%>
+    pageEncoding="UTF-8" import="com.pmrice.dm.model.*, com.pmrice.dm.util.*, java.util.*, java.sql.*"%>
 <!DOCTYPE html>
 <%  
 	if (session == null || session.getAttribute("activeUser") == null){
@@ -8,18 +8,18 @@
 	}
 	boolean userIsAdmin = ((User)request.getSession().getAttribute("activeUser")).isAdmin();
 
-	List<User> users = User.getUsers();
+	List<User> users = User.getUsers((Connection)session.getAttribute("connection"));
 	User user = null;
 	Object usero = request.getAttribute("userid"); 
 	if (usero == null) user = new User("","",false);
-	else user = User.get((String)usero);
+	else user = User.get((Connection)session.getAttribute("connection"),(String)usero);
 	Object m = request.getAttribute("message");
 	String message = (m != null) ? (String)m : "";
 	String userid = user.getUserid();
 	String password = user.getPassword();
 	boolean admin = user.isAdmin();
 	
-	MailConfig mconfig = MailConfig.get();
+	MailConfig mconfig = MailConfig.get((Connection)session.getAttribute("connection"));
 %>
 <html>
 <head>

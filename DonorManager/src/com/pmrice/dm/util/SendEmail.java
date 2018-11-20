@@ -1,5 +1,6 @@
 package com.pmrice.dm.util;
 
+import java.sql.Connection;
 import java.util.Properties;
 
 import javax.mail.Authenticator;
@@ -22,10 +23,10 @@ public class SendEmail {
 	public static String userid;
 	public static String password;
 
-	public static String send(String to, String from, String bcc, String subject, String messageText) {
+	public static String send(Connection con, String to, String from, String bcc, String subject, String messageText) {
 
 		try {
-			MailConfig config = MailConfig.get();
+			MailConfig config = MailConfig.get(con);
 			Properties prop = new Properties();
 			prop.setProperty("mail.smtp.auth", "true");
 			prop.setProperty("mail.smtp.starttls.enable", "true");

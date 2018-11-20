@@ -95,8 +95,7 @@ public class Donation implements Serializable {
 		return this.getDate() + " $" + this.getAmount();
 	}
 		
-	public static Donation get(int id)  {
-		Connection con = Util.getConnection();
+	public static Donation get(Connection con, int id)  {
 		try {
 			String sql = "SELECT * FROM donation WHERE id = '" + id + "';";
 			ResultSet rs = con.createStatement().executeQuery(sql);
@@ -121,12 +120,11 @@ public class Donation implements Serializable {
 	 * @param donor_id
 	 * @return
 	 */
-	public static List<Donation> getForDonor(int donor_id){
+	public static List<Donation> getForDonor(Connection con, int donor_id){
 		List<Donation> list = new ArrayList<Donation>();
 		Donation nd = new Donation();
 		nd.setDonorId(donor_id);
 		list.add(nd);
-		Connection con = Util.getConnection();
 		try {
 			ResultSet rsc = con.createStatement().executeQuery("SELECT COUNT(*) FROM donation WHERE donor_id = '" + donor_id + "'");
 			int count = 0;
@@ -149,9 +147,8 @@ public class Donation implements Serializable {
 		}
 	}
 	
-	public static boolean remove(int id) {
+	public static boolean remove(Connection con, int id) {
 		try {
-			Connection con = Util.getConnection();
 			String sql = "DELETE FROM donation WHERE id = '" + id + "';";
 			con.createStatement().execute(sql);
 			return true;
@@ -161,8 +158,7 @@ public class Donation implements Serializable {
 		}
 	}
 	
-	public static boolean update(Donation donation) {
-		Connection con = Util.getConnection();
+	public static boolean update(Connection con, Donation donation) {
 		try {
 			StringBuilder b = new StringBuilder("UPDATE donation ")
 				.append("SET date = '").append(Util.displayToStorage(donation.getDate())).append("',")
@@ -180,8 +176,7 @@ public class Donation implements Serializable {
 		}
 	}
 	
-	public static Donation add(Donation donation) {
-		Connection con = Util.getConnection();
+	public static Donation add(Connection con, Donation donation) {
 		try {
 			Statement stmnt = con.createStatement();
 			int newid = 0;

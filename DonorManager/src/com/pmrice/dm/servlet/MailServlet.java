@@ -1,6 +1,7 @@
 package com.pmrice.dm.servlet;
 
 import java.io.IOException;
+import java.sql.Connection;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,6 +29,7 @@ public class MailServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Connection con = (Connection)request.getSession().getAttribute("connection");
 		String action = request.getParameter("action");
 		String from = request.getParameter("from");
 		String bcc = request.getParameter("bcc");
@@ -39,7 +41,7 @@ public class MailServlet extends HttpServlet {
 				String selection = request.getParameter("to");
 				String to = selection.substring(selection.lastIndexOf(':') + 2).trim();
 				request.setAttribute("to", to);
-				String err = SendEmail.send(to, from, bcc, subject, messageText);
+				String err = SendEmail.send(con, to, from, bcc, subject, messageText);
 				if (err != null) {
 					String message = "This error ocurred on sending an email to " + selection + ": " + err;
 					request.setAttribute("message", message);
@@ -56,7 +58,7 @@ public class MailServlet extends HttpServlet {
 				config.setPort(Integer.parseInt(request.getParameter("port")));
 				config.setUserid(request.getParameter("userid"));
 				config.setPassword(request.getParameter("password"));
-				MailConfig.save(config);
+				MailConfig.save(con, config);
 				request.getRequestDispatcher("/admin.jsp").forward(request, response);
 			}
 			break;

@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8" import="java.util.*, com.pmrice.dm.model.*"%>
+    pageEncoding="UTF-8" import="java.util.*, com.pmrice.dm.model.*, java.sql.*"%>
 <%  
-	List<Donor> donors = Donor.getDonors();
+	List<Donor> donors = Donor.getDonors((Connection)session.getAttribute("connection"));
 	if (session == null || session.getAttribute("activeUser") == null){
 		request.setAttribute("message", "Your session has expired. Please log in again.");
 		request.getRequestDispatcher("/login.jsp").forward(request, response);

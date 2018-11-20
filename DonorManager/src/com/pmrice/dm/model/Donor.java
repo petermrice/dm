@@ -7,8 +7,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.pmrice.dm.util.Util;
-
 public class Donor implements Serializable {
 	
 	private static final long serialVersionUID = -5814965103358184008L;
@@ -144,8 +142,7 @@ public class Donor implements Serializable {
 		return getName();
 	}
 	
-	public static Donor get(int id) {
-		Connection con = Util.getConnection();
+	public static Donor get(Connection con, int id) {
 		try {
 			String sql = "SELECT * FROM donor WHERE id = '" + id + "';";
 			ResultSet rs = con.createStatement().executeQuery(sql);
@@ -171,8 +168,7 @@ public class Donor implements Serializable {
 		}
 	}
 	
-	public static boolean remove(int id) {
-		Connection con = Util.getConnection();
+	public static boolean remove(Connection con, int id) {
 		try {
 			String sql = "DELETE FROM donor WHERE id = '" + id + "';";
 			con.createStatement().execute(sql);
@@ -183,8 +179,7 @@ public class Donor implements Serializable {
 		}
 	}
 	
-	public static void removeHidden() {
-		Connection con = Util.getConnection();
+	public static void removeHidden(Connection con) {
 		try {
 			String sql = "DELETE FROM donor WHERE hidden = 1;";
 			con.createStatement().execute(sql);
@@ -193,8 +188,7 @@ public class Donor implements Serializable {
 		}
 	}
 	
-	public static List<Donor> getHiddenDonors() {
-		Connection con = Util.getConnection();
+	public static List<Donor> getHiddenDonors(Connection con) {
 		try {
 			String sql = "SELECT * FROM donor WHERE hidden = 1 ORDER BY lastname;";
 			ResultSet rs = con.createStatement().executeQuery(sql);
@@ -223,8 +217,7 @@ public class Donor implements Serializable {
 		}
 	}
 	
-	public static boolean update(Donor donor) {
-		Connection con = Util.getConnection();
+	public static boolean update(Connection con, Donor donor) {
 		try {
 			StringBuilder b = new StringBuilder("UPDATE donor SET ")
 				.append(" name = '").append(donor.getName()).append("',")
@@ -249,8 +242,7 @@ public class Donor implements Serializable {
 		}
 	}
 	
-	public static Donor add(Donor donor) {
-		Connection con = Util.getConnection();
+	public static Donor add(Connection con, Donor donor) {
 		try {
 			Statement stmnt = con.createStatement();
 			int newid = 0;
@@ -288,8 +280,7 @@ public class Donor implements Serializable {
 	 * This is used for display of list of donors on the browser.
 	 * @return
 	 */
-	public static List<Donor> getDonors(){
-		Connection con = Util.getConnection();
+	public static List<Donor> getDonors(Connection con){
 		try {
 			String sql = "SELECT * FROM donor WHERE hidden = 0 ORDER BY lastname;";
 			ResultSet rs = con.createStatement().executeQuery(sql);

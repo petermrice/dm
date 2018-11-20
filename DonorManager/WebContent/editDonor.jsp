@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8" import="com.pmrice.dm.model.*, com.pmrice.dm.util.*, java.util.*"%>
+    pageEncoding="UTF-8" import="com.pmrice.dm.model.*, com.pmrice.dm.util.*, java.util.*, java.sql.*"%>
 <!DOCTYPE html>
 <%  
 	if (session == null || session.getAttribute("activeUser") == null){
@@ -8,9 +8,10 @@
 	}
 	boolean userIsAdmin = ((User)request.getSession().getAttribute("activeUser")).isAdmin();
 	List<Donor> donors = (List<Donor>)request.getSession().getAttribute("donors");
+	Connection con = (Connection)request.getSession().getAttribute("connection");
 	int donorId = (int)request.getAttribute("donor_id"); 
 	Donor donor = donors.get(0);
-	if (donorId > 0) donor = Donor.get(donorId);
+	if (donorId > 0) donor = Donor.get(con, donorId);
 %>
 <html>
 <head>

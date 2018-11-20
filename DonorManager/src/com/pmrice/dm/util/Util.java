@@ -1,11 +1,10 @@
 package com.pmrice.dm.util;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-
-import com.pmrice.dm.servlet.MainServlet;
 
 public class Util {
 	
@@ -21,14 +20,20 @@ public class Util {
 		Calendar calendar = GregorianCalendar.getInstance();
 		return calendar.get(Calendar.YEAR);
 	}
-			
-	public static Connection getConnection() {
+	
+	/**
+	 * This should be called only from the login, which caches the
+	 * Connection object in the HttpSession for use during this session.
+	 * 
+	 * Returns null if there is no database with this url
+	 * 
+	 * @param orgid
+	 * @return
+	 */
+	public static Connection getConnection(String orgid) {
 		try {
-			if (MainServlet.INSTANCE == null) {
-				System.out.println("The MainServlet must be running to execute this method.");
-				return null;
-			}
-			Connection connection = (Connection)MainServlet.INSTANCE.getServletContext().getAttribute("connection");
+			String dburl = "jdbc:h2:~/dbfiles/" + orgid + "/dmdb";
+			Connection connection = DriverManager.getConnection(dburl, "sa", "");
 			connection.setAutoCommit(true);
 			return connection;
 		} catch (Exception e) {

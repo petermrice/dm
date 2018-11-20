@@ -4,8 +4,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.pmrice.dm.util.Util;
-
 public class MailConfig {
 
 	private String url;
@@ -40,8 +38,7 @@ public class MailConfig {
 	
 	public MailConfig() {}
 	
-	public static MailConfig get() {
-		Connection con = Util.getConnection();
+	public static MailConfig get(Connection con) {
 		try {
 			String sql = "SELECT * FROM mailconfig WHERE id = 1";
 			ResultSet rs = con.createStatement().executeQuery(sql);
@@ -61,8 +58,7 @@ public class MailConfig {
 		}
 	}
 	
-	public static void save(MailConfig config) {
-		Connection con = Util.getConnection();
+	public static void save(Connection con, MailConfig config) {
 		try {
 			String sql = "UPDATE mailconfig SET id = 1, url = '" + 
 					config.getUrl() + "', port = " + config.getPort() + ", userid = '" + config.getUserid() +

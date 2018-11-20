@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8" import="com.pmrice.dm.model.*, com.pmrice.dm.util.*, java.util.*"%>
+    pageEncoding="UTF-8" import="com.pmrice.dm.model.*, com.pmrice.dm.util.*, java.util.*, java.sql.*"%>
 <!DOCTYPE html>
 <%  
 	if (session == null || session.getAttribute("activeUser") == null){
@@ -7,15 +7,16 @@
 		request.getRequestDispatcher("/login.jsp").forward(request, response);
 	}
 	boolean userIsAdmin = ((User)session.getAttribute("activeUser")).isAdmin();
+	Connection con = (Connection)request.getSession().getAttribute("connection");
 	int donorId = (int)request.getAttribute("donor_id"); 
-	List<Donation> donations = Donation.getForDonor(donorId);
+	List<Donation> donations = Donation.getForDonor(con, donorId);
 	int donationId = (int)request.getAttribute("donation_id");
 	Donation donation = new Donation(0, Util.today(), "0.00");
-	if (donationId > 0) donation = Donation.get(donationId);
-	List<Pledge> pledges = Pledge.getPledgeListForDonor(donorId);
+	if (donationId > 0) donation = Donation.get(con, donationId);
+	List<Pledge> pledges = Pledge.getPledgeListForDonor(con, donorId);
 	int pledgeId = (int)request.getAttribute("pledge_id");
 	Pledge pledge = new Pledge(0, "New Pledge", Util.today());
-	if (pledgeId > 0) pledge = Pledge.get(pledgeId);
+	if (pledgeId > 0) pledge = Pledge.get(con, pledgeId);
 %>
 <html>
 <head>
@@ -102,7 +103,7 @@
 		</li>
 	</ul>
 
-<div style="30px;text-align: center; font-weight: bold;" >Donations and Pledges for: <%=Donor.get(donorId).getName()%></div>
+<div style="30px;text-align: center; font-weight: bold;" >Donations and Pledges for: <%=Donor.get(con, donorId).getName()%></div>
 
 <table><tr><td>
 <div id="donationBlock">
