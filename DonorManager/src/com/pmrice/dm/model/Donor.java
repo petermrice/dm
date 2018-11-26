@@ -264,7 +264,7 @@ public class Donor implements Serializable {
 				.append("'").append(donor.getTelephone()).append("',")
 				.append("'").append(donor.getEmail()).append("',")
 				.append("'").append(donor.getNotes()).append("',")
-				.append(donor.isHidden()).append(");");	
+				.append(donor.isHidden() ? 1 : 0).append(");");	
 			String sql = b.toString();
 			stmnt = con.createStatement();
 			stmnt.execute(sql);

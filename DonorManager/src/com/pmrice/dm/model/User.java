@@ -50,7 +50,7 @@ public class User implements Serializable {
 				return null;
 			}
 		} catch (SQLException e) {
-			System.out.println("Error getting a User");
+			System.out.println("User.get: Error getting a User");
 			return null;
 		}
 	}
@@ -62,7 +62,7 @@ public class User implements Serializable {
 			User u = get(connection, userid);
 			return u == null;
 		} catch (SQLException e) {
-			System.out.println("Error removing a User");
+			System.out.println("User.remove: Error removing a User");
 			return false;
 		}
 	}
@@ -77,7 +77,7 @@ public class User implements Serializable {
 			connection.createStatement().execute(sql);
 			return true;
 		} catch (SQLException e) {
-			System.out.println("Error updating a User");
+			System.out.println("User.update: Error updating a User");
 			return false;
 		}
 	}
@@ -95,7 +95,7 @@ public class User implements Serializable {
 			connection.createStatement().execute(sql);
 			return true;
 		} catch (SQLException e) {
-			System.out.println("Error adding a User: " + e);
+			System.out.println("User.add: Error adding a User: " + e);
 			return false;
 		}
 	}
@@ -114,7 +114,7 @@ public class User implements Serializable {
 			}
 			return users;
 		} catch (Exception e) {
-			System.out.println("Error getting a User: " + e);
+			System.out.println("User.getUsers: Error getting a User: " + e);
 			return null;
 		}
 
@@ -129,7 +129,7 @@ public class User implements Serializable {
 				return false;
 			}
 		} catch (Exception e) {
-			System.err.println("In test of userid: " + e);
+			System.err.println("User.isUseridInUse: In test of userid: " + e);
 			return false;
 		}
 	}
@@ -146,7 +146,7 @@ public class User implements Serializable {
 				return false;
 			}
 		} catch (SQLException e) {
-			System.out.println(e);
+			System.out.println("User.isUserValid: " + e);
 			return false;
 		}
 	}

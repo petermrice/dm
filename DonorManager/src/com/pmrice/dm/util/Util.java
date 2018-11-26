@@ -1,7 +1,5 @@
 package com.pmrice.dm.util;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -19,27 +17,6 @@ public class Util {
 	public static int year() {
 		Calendar calendar = GregorianCalendar.getInstance();
 		return calendar.get(Calendar.YEAR);
-	}
-	
-	/**
-	 * This should be called only from the login, which caches the
-	 * Connection object in the HttpSession for use during this session.
-	 * 
-	 * Returns null if there is no database with this url
-	 * 
-	 * @param orgid
-	 * @return
-	 */
-	public static Connection getConnection(String orgid) {
-		try {
-			String dburl = "jdbc:h2:~/dbfiles/" + orgid + "/dmdb";
-			Connection connection = DriverManager.getConnection(dburl, "sa", "");
-			connection.setAutoCommit(true);
-			return connection;
-		} catch (Exception e) {
-			System.out.println(e.toString());
-			return null;
-		}
 	}
 			
 	/**
@@ -93,7 +70,7 @@ public class Util {
 			if (month < 1 || month > 12) return false;
 			if (year < 2000 || year > 3000) return false;
 		} catch (NumberFormatException e) {
-			System.out.println("Error parsing a number: " + s);
+			System.out.println("Util.isDateValid: Error parsing a number: " + s);
 		}
 		return true;
 	}

@@ -21,8 +21,14 @@
 	<property name="tomcat" value="/Users/peterrice/dm/apache-tomcat-8.5.34"/>
 	<property name="build.compiler" value="javac1.8"/>
 
+    <!-- ================================= 
+          classpath
+          point at tomcat/lib where hsqldb.jar is located             
+         ================================= -->
+
 	<path id="classpath">
 		<pathelement path="${classpath}"/>
+		<fileset dir="/Users/peterrice/.p2/pool/plugins" includes="*.jar"/>
 		<fileset dir="${lib}" includes="*.jar"/>
 		<fileset dir="${tomcat}/lib" includes="*.jar"/>
 	</path>
@@ -38,13 +44,13 @@
 	</target>
 	
     <!-- ================================= 
-          target: build              
+          target: build         
+		  do not include hsqldb.jar since it is in tomcat/lib    
          ================================= -->
 	
     <target name="build" depends="compile">
     	<war webxml="${web.xml}"  destfile="${basedir}/build/${warfile}" >
     		<fileset dir="${basedir}/WebContent"/>
-    		<lib dir="${lib}"/>
     		<classes dir="${bin}"/>
     		<metainf dir="${basedir}/WebContent/META-INF"/> 
     	</war>

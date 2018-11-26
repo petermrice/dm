@@ -9,15 +9,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.pmrice.dm.library.DatabaseUtils;
 import com.pmrice.dm.model.Donor;
 import com.pmrice.dm.model.User;
-import com.pmrice.dm.util.Util;
 
 public class LoginServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String orgid = request.getParameter("orgid");
-		Connection con = Util.getConnection(orgid);
+		Connection con = DatabaseUtils.getConnection(orgid);
 		String userid = request.getParameter("userid");
 		String password = request.getParameter("password");
 		boolean valid = User.isUserValid(con, userid, password);
