@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     Oct 27, 2018 11:15:32 AM                                                        
+
+     project DMTools.war
+     
+     description
+                   
+     peterrice                                                                
+     ====================================================================== -->
+<project name="build_war" default="build">
+    <description>
+            build the DMTools.war application
+    </description>
+	
+	<property name="src" value="${basedir}/src"/>
+	<property name="bin" value="${basedir}/WebContent/WEB-INF/classes"/>
+	<property name="web.xml" value="${basedir}/WebContent/WEB-INF/web.xml"/>
+	<property name="warfile" value="DMTools.war"/>
+	<property name="lib" value="${basedir}/WebContent/WEB-INF/lib"/>
+	<property name="tomcat" value="/Users/peterrice/dm/apache-tomcat-8.5.34"/>
+	<property name="build.compiler" value="javac1.8"/>
+
+	<!-- ================================= 
+	       classpath
+	       point at the tomcat/lib to pick up hsqldb.jar for compiling              
+	     ================================= -->
+
+	<path id="classpath">
+		<pathelement path="${classpath}"/>
+		<fileset dir="/Users/peterrice/.p2/pool/plugins" includes="*.jar"/>
+		<fileset dir="${lib}" includes="*.jar"/>
+		<fileset dir="${tomcat}/lib" includes="*.jar"/>
+	</path>
+
+	
+    <!-- ================================= 
+          target: clean              
+         ================================= -->
+	
+	<target name="clean">
+		<delete dir="${bin}"/>
+		<mkdir dir="${bin}"/>
+	</target>
+	
+    <!-- ================================= 
+          target: build              
+          The hsqldb.jar is in tomcat/bin, so it is not neede inside the target jar.
+         ================================= -->
+	
+    <target name="build" depends="compile">
+    	<war webxml="${web.xml}"  destfile="${basedir}/build/${warfile}" >
+    		<fileset dir="${basedir}/WebContent"/>
+    		<classes dir="${bin}"/>
+    		<metainf dir="${basedir}/WebContent/META-INF"/> 
+    	</war>
+    	<copy file="${basedir}/build/${warfile}" todir="${tomcat}/webapps"/>
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: compile                      
+    - - - - - - - - - - - - - - - - - - - -->
+	
+    <target name="compile" depends="clean">
+    	<javac 
+    		srcdir="${src}" 
+    		destdir="${bin}" 
+    		debug="on" 
+    		debuglevel="lines,vars,source" 
+    		includeantruntime="false">
+			<classpath refid="classpath"/>
+    	</javac>
+    </target>
+
+</project>
+

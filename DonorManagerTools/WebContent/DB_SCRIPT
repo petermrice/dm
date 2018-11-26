@@ -1,0 +1,75 @@
+CREATE TABLE donor (
+	id INT NOT NULL PRIMARY KEY, 
+	name VARCHAR(80) DEFAULT '', 
+	lastname VARCHAR(80) DEFAULT '', 
+	address1 VARCHAR(80) DEFAULT '', 
+	address2 VARCHAR(80) DEFAULT '', 
+	city VARCHAR(80) DEFAULT '', 
+	state VARCHAR(80) DEFAULT '', 
+	zip VARCHAR(80) DEFAULT '', 
+	country VARCHAR(80) DEFAULT '', 
+	telephone VARCHAR(80) DEFAULT '', 
+	email VARCHAR(80) DEFAULT '', 
+	notes VARCHAR(80) DEFAULT '', 
+	hidden tinyint DEFAULT 0
+);
+
+CREATE TABLE donorkey (
+	id INT,
+	value INT
+);
+
+INSERT INTO donorkey (id, value) VALUES(1, 1);
+
+CREATE TABLE donation (
+	id INT NOT NULL PRIMARY KEY,
+	donor_id int DEFAULT 0,
+	date VARCHAR(12) DEFAULT '', 
+	description VARCHAR(80) DEFAULT '', 
+	amount VARCHAR(20) DEFAULT '',
+	note VARCHAR(255) DEFAULT ''
+);
+
+CREATE TABLE donationkey (
+	id INT,
+	value INT
+);
+
+INSERT INTO donationkey (id, value) VALUES(1, 1);
+
+CREATE TABLE dmuser (
+	userid VARCHAR(100) DEFAULT '' PRIMARY KEY,
+	password VARCHAR(100) DEFAULT '',
+	admin tinyint DEFAULT 0
+);
+
+INSERT INTO dmuser (userid, password, admin) VALUES ('Admin', '12Admin!@', 1);
+
+CREATE TABLE pledge (
+	id INT NOT NULL PRIMARY KEY,
+	donor_id INT NOT NULL,
+	description VARCHAR(255) DEFAULT '',
+	amount VARCHAR(20) DEFAULT '',
+	begin_date VARCHAR(12) DEFAULT '',
+	end_date VARCHAR(12) DEFAULT '',
+	fulfilled tinyint DEFAULT 0,
+	cancelled tinyint DEFAULT 0,
+	note VARCHAR(255) DEFAULT ''
+); 
+
+CREATE TABLE pledgekey (
+	id INT,
+	value INT
+);
+
+INSERT INTO pledgekey (id, value) VALUES(1, 1);
+
+CREATE TABLE mailconfig (
+	id INT NOT NULL,
+	url VARCHAR(80) DEFAULT '',
+	port INT NOT NULL,
+	userid VARCHAR(80) DEFAULT '',
+	password VARCHAR(80) DEFAULT ''
+);
+
+INSERT INTO mailconfig (id, url, port, userid, password) VALUES(1, 'mail.boppie.com',465,'peter@boppie.com','@@milton%%');
